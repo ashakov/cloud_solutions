@@ -97,6 +97,11 @@ VILLA_SIZES  = [150, 180, 200, 220, 250, 280, 300, 350, 400, 500]
 CAM_FEES   = [60, 70, 80, 90, 100, 110, 120]
 SINKING    = [500, 600, 700, 800, 1000]
 
+# District classification (affects zone_type, rental_type mix, liquidity)
+TOURIST_DISTRICTS  = {"bang-tao", "kamala", "surin", "layan", "patong"}
+MIXED_DISTRICTS    = {"cherng-talay", "nai-harn", "rawai"}
+# rest = residential
+
 
 def _make_listing(
     district: str,
@@ -130,9 +135,62 @@ def _make_listing(
     rental_prog = random.random() < 0.35
     rental_yield = round(random.uniform(5.0, 10.0), 1) if rental_prog else None
 
-    # Hotel licence more common in Patong, rarer elsewhere
-    hl_prob = 0.6 if district == "patong" else 0.25
+    # Zone type
+    if district in TOURIST_DISTRICTS:
+        zone_type = "tourist"
+    elif district in MIXED_DISTRICTS:
+        zone_type = "mixed"
+    else:
+        zone_type = "residential"
+
+    # Hotel licence more common in tourist zones / Patong
+    hl_prob = 0.65 if district == "patong" else (0.35 if zone_type == "tourist" else 0.1)
     has_hl = random.random() < hl_prob if rental_prog else False
+
+    # Rental type: tourist zones lean short-term, others long-term
+    if rental_prog:
+        r_type = "short_term" if zone_type == "tourist" else "long_term"
+    else:
+        r_type = random.choice(["short_term", "long_term", "unknown"])
+
+    # Rental pool split (developer takes 30-40% in managed programs)
+    pool_split = round(random.choice([0.60, 0.65, 0.70, 0.75]), 2) if rental_prog else None
+
+    # Actual monthly rent (long-term listings often show current rent)
+    monthly_rent = None
+    if r_type == "long_term" and random.random() < 0.5:
+        gross_yield_pct = random.uniform(0.04, 0.08)
+        monthly_rent = round(price_thb * gross_yield_pct / 12 / 1000) * 1000
+
+    # Furniture package (common for investor-ready condos)
+    furniture = None
+    if property_type == "condo" and random.random() < 0.6:
+        furniture = float(random.choice([200_000, 300_000, 400_000, 500_000, 600_000]))
+
+    # Features
+    is_villa = property_type == "villa"
+    has_pool    = is_villa or (random.random() < 0.15)
+    has_garden  = is_villa or (random.random() < 0.10)
+    has_gym     = property_type == "condo" and random.random() < 0.70
+    parking     = random.choice([1, 1, 1, 2]) if property_type in ("condo", "villa") else None
+
+    # Status
+    occupancy = random.choices(
+        ["vacant", "rented", "owner_occupied"], weights=[40, 45, 15]
+    )[0]
+
+    # Off-plan (30% of new listings)
+    is_off_plan = random.random() < 0.30
+    completion = None
+    if is_off_plan:
+        months_ahead = random.randint(6, 36)
+        completion = datetime.utcnow().replace(day=1) + timedelta(days=months_ahead * 30)
+
+    year_built = None if is_off_plan else random.randint(2010, 2025)
+
+    # Market signals
+    dom = random.randint(1, 400)
+    price_drops = 0 if dom < 30 else random.randint(0, int(dom / 60))
 
     scraped_delta = timedelta(hours=random.randint(0, 72))
     scraped_at = datetime.utcnow() - scraped_delta
@@ -153,9 +211,24 @@ def _make_listing(
         price_per_sqm_thb=round(price_per_sqm, 2),
         cam_fee_per_sqm=float(cam_fee) if cam_fee else None,
         sinking_fund_per_sqm=float(sinking) if sinking else None,
+        furniture_package_thb=furniture,
+        monthly_rent_thb=float(monthly_rent) if monthly_rent else None,
+        rental_type=r_type,
         rental_yield_claimed=rental_yield,
         rental_program=rental_prog,
+        rental_pool_split=pool_split,
         has_hotel_license=has_hl,
+        has_pool=has_pool,
+        has_garden=has_garden,
+        has_gym=has_gym,
+        parking_spaces=parking,
+        occupancy_status=occupancy,
+        is_off_plan=is_off_plan,
+        completion_date=completion,
+        year_built=year_built,
+        days_on_market=dom,
+        price_drop_count=price_drops,
+        zone_type=zone_type,
         scraped_at=scraped_at,
         raw_data={
             "source": source,

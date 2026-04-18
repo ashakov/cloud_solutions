@@ -40,9 +40,32 @@ class RawListing:
     cam_fee_per_sqm: float | None = None
     sinking_fund_per_sqm: float | None = None
     furniture_package_thb: float | None = None
+
+    # Rental
+    monthly_rent_thb: float | None = None
+    rental_type: str | None = None             # short_term | long_term | unknown
     rental_yield_claimed: float | None = None
     rental_program: bool | None = None
+    rental_pool_split: float | None = None     # investor share 0–1
     has_hotel_license: bool | None = None
+
+    # Features
+    has_pool: bool | None = None
+    has_garden: bool | None = None
+    has_gym: bool | None = None
+    parking_spaces: int | None = None
+
+    # Status
+    occupancy_status: str | None = None        # vacant | rented | owner_occupied
+    is_off_plan: bool | None = None
+    completion_date: datetime | None = None
+    year_built: int | None = None
+
+    # Liquidity
+    days_on_market: int | None = None
+    price_drop_count: int | None = None
+    zone_type: str | None = None               # tourist | residential | mixed
+
     raw_data: dict = field(default_factory=dict)
     scraped_at: datetime = field(default_factory=datetime.utcnow)
 

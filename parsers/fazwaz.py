@@ -213,6 +213,30 @@ class FazWazParser(BaseParser):
             if price_thb and area_sqm and area_sqm > 0:
                 price_per_sqm = price_thb / area_sqm
 
+            # ---- Features (text scan) ------------------------------------
+            has_pool   = bool(re.search(r"\bpool\b|\bสระ", card_text))
+            has_garden = bool(re.search(r"\bgarden\b|\bสวน", card_text))
+            has_gym    = bool(re.search(r"\bgym\b|\bfitness", card_text))
+            is_off_plan = bool(re.search(r"off.?plan|pre.?sale|under construction|pre-?launch", card_text))
+            rental_prog = bool(re.search(r"rental program|rental guarantee|guaranteed return|rental pool", card_text))
+            has_hl = bool(re.search(r"hotel licen[sc]e|hotel permit", card_text))
+
+            # ---- Rental type ---------------------------------------------
+            if re.search(r"short.?term|daily|weekly|airbnb|holiday rental", card_text):
+                r_type = "short_term"
+            elif re.search(r"long.?term|annual|yearly|monthly rent", card_text):
+                r_type = "long_term"
+            else:
+                r_type = "unknown"
+
+            # ---- Monthly rent (if explicitly listed) ---------------------
+            monthly_rent = None
+            rent_match = re.search(
+                r"(?:rent|rental)[^\d฿]*฿?\s*([\d,]+)\s*/\s*(?:month|mo\b)", card_text
+            )
+            if rent_match:
+                monthly_rent = self._parse_float(rent_match.group(1).replace(",", ""))
+
             listing = RawListing(
                 source=self.SOURCE,
                 source_id=source_id,
@@ -227,6 +251,14 @@ class FazWazParser(BaseParser):
                 area_sqm=area_sqm,
                 price_thb=price_thb,
                 price_per_sqm_thb=price_per_sqm,
+                monthly_rent_thb=monthly_rent,
+                rental_type=r_type,
+                rental_program=rental_prog,
+                has_hotel_license=has_hl,
+                has_pool=has_pool,
+                has_garden=has_garden,
+                has_gym=has_gym,
+                is_off_plan=is_off_plan,
                 raw_data={
                     "card_text": card_text[:500],
                     "price_raw": price_raw,
@@ -268,6 +300,29 @@ class FazWazParser(BaseParser):
             listing.has_hotel_license = bool(
                 re.search(r"hotel\s+licen[sc]e|hotel\s+permit", text)
             )
+
+            # Pool / garden / gym
+            if listing.has_pool is False:
+                listing.has_pool = bool(re.search(r"\bpool\b|\bสระ", text))
+            if listing.has_garden is False:
+                listing.has_garden = bool(re.search(r"\bgarden\b|\bสวน", text))
+            if listing.has_gym is False:
+                listing.has_gym = bool(re.search(r"\bgym\b|\bfitness", text))
+
+            # Days on market (sometimes shown on detail page)
+            dom_match = re.search(r"listed\s+(\d+)\s+day", text)
+            if dom_match:
+                listing.days_on_market = int(dom_match.group(1))
+
+            # Rental pool split (e.g. "70/30", "60/40")
+            split_match = re.search(r"(\d{2})/(\d{2})\s*(?:split|program|rental)", text)
+            if split_match:
+                listing.rental_pool_split = int(split_match.group(1)) / 100
+
+            # Year built
+            year_match = re.search(r"(?:built|completed|year)\s*[:\-]?\s*(20\d{2})", text)
+            if year_match:
+                listing.year_built = int(year_match.group(1))
 
             # Developer name
             dev_tag = soup.select_one(

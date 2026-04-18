@@ -49,10 +49,30 @@ class Property(Base):
     sinking_fund_per_sqm = Column(Float)              # one-time contribution per m²
     furniture_package_thb = Column(Float)
 
-    # Rental info (from developer marketing)
-    rental_yield_claimed = Column(Float)              # % as stated by developer
+    # Rental info
+    monthly_rent_thb = Column(Float)                  # actual current rent if listed/known
+    rental_type = Column(String(20))                  # short_term | long_term | unknown
+    rental_yield_claimed = Column(Float)              # % yield as stated by developer
     rental_program = Column(Boolean)                  # guaranteed rental program?
+    rental_pool_split = Column(Float)                 # investor's share 0–1 (e.g. 0.7 = 70/30)
     has_hotel_license = Column(Boolean)
+
+    # Property features (affect OPEX estimates)
+    has_pool = Column(Boolean)
+    has_garden = Column(Boolean)
+    has_gym = Column(Boolean)
+    parking_spaces = Column(Integer)
+
+    # Status & timeline
+    occupancy_status = Column(String(30))             # vacant | rented | owner_occupied
+    is_off_plan = Column(Boolean)                     # under construction / pre-sale
+    completion_date = Column(DateTime)                # expected handover (off-plan)
+    year_built = Column(Integer)
+
+    # Market liquidity signals
+    days_on_market = Column(Integer)                  # how long listed (if available)
+    price_drop_count = Column(Integer)                # number of price reductions
+    zone_type = Column(String(30))                    # tourist | residential | mixed
 
     # Raw JSON blob — preserve everything scraped
     raw_data = Column(Text)
