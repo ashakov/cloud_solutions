@@ -83,6 +83,10 @@ def main() -> None:
     # status
     sub.add_parser("status", help="Show recent scraper run history")
 
+    # seed
+    p_seed = sub.add_parser("seed", help="Populate DB with synthetic Phuket data (no internet needed)")
+    p_seed.add_argument("--count", type=int, default=40, help="Listings per district/type/ownership combo")
+
     args = parser.parse_args()
 
     if args.command == "scrape":
@@ -91,6 +95,9 @@ def main() -> None:
         asyncio.run(cmd_benchmarks())
     elif args.command == "status":
         asyncio.run(cmd_status())
+    elif args.command == "seed":
+        from scrapers.seeder import seed
+        asyncio.run(seed(listings_per_combo=args.count))
     else:
         parser.print_help()
         sys.exit(1)
