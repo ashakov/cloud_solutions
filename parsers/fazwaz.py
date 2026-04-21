@@ -124,8 +124,10 @@ class FazWazParser(BaseParser):
             source_id = re.sub(r"[^a-zA-Z0-9_-]", "_", href.strip("/").split("/")[-1])[:250]
 
             # ── Price ─────────────────────────────────────────────────────
+            # .price-tag can contain "฿6,700,000\n฿181,081/SqM" — take FIRST number only
             price_tag = card.select_one(".price-tag")
-            price_thb = self._parse_thb(price_tag.get_text(strip=True) if price_tag else None)
+            price_raw = price_tag.get_text(" ", strip=True) if price_tag else None
+            price_thb = self._parse_thb_first(price_raw)
 
             # ── Title / Project ───────────────────────────────────────────
             title_tag = card.select_one(".unit-name") or card.select_one(".unit-info_title")
@@ -136,32 +138,38 @@ class FazWazParser(BaseParser):
             location_text = loc_tag.get_text(strip=True) if loc_tag else ""
 
             # ── Features: beds / baths / sqm ─────────────────────────────
-            features = card.select(".unit-info__feature")
+            # Strategy 1: .unit-info__shot-description — "1 Bed | 1 Bath | 35 SqM"
             bedrooms = bathrooms = None
             area_sqm = None
-            for feat in features:
-                txt = feat.get_text(strip=True).lower()
-                if "bed" in txt or "br" in txt:
-                    bedrooms = self._parse_int(txt)
-                elif "bath" in txt:
-                    bathrooms = self._parse_int(txt)
-                elif "sqm" in txt or "sq.m" in txt or "m²" in txt:
-                    area_sqm = self._parse_float(re.sub(r"[^\d.]", "", txt.replace(",", "")))
+            desc = card.select_one(".unit-info__shot-description")
+            if desc:
+                desc_txt = desc.get_text(" ", strip=True)
+                bed_m = re.search(r"(\d+)\s*(?:Bed|BR|Bedroom)", desc_txt, re.IGNORECASE)
+                bath_m = re.search(r"(\d+)\s*(?:Bath|Bathroom)", desc_txt, re.IGNORECASE)
+                sqm_m  = re.search(r"([\d,]+)\s*(?:SqM|Sq\.M|m²|sqm)", desc_txt, re.IGNORECASE)
+                if bed_m:
+                    bedrooms = int(bed_m.group(1))
+                if bath_m:
+                    bathrooms = int(bath_m.group(1))
+                if sqm_m:
+                    area_sqm = float(sqm_m.group(1).replace(",", ""))
 
-            # Also try short description block
-            if not bedrooms:
-                desc = card.select_one(".unit-info__shot-description")
-                if desc:
-                    txt = desc.get_text(strip=True).lower()
-                    bed_m = re.search(r"(\d+)\s*bed", txt)
-                    bath_m = re.search(r"(\d+)\s*bath", txt)
-                    sqm_m = re.search(r"([\d,]+)\s*sqm", txt)
-                    if bed_m:
-                        bedrooms = int(bed_m.group(1))
-                    if bath_m:
-                        bathrooms = int(bath_m.group(1))
+            # Strategy 2: individual .unit-info__feature elements
+            if not area_sqm:
+                for feat in card.select(".unit-info__feature"):
+                    txt = feat.get_text(" ", strip=True)
+                    sqm_m = re.search(r"([\d,]+)\s*(?:SqM|Sq\.M|m²)", txt, re.IGNORECASE)
                     if sqm_m:
                         area_sqm = float(sqm_m.group(1).replace(",", ""))
+                        break
+                    if not bedrooms:
+                        bed_m = re.search(r"(\d+)\s*(?:Bed|BR)", txt, re.IGNORECASE)
+                        if bed_m:
+                            bedrooms = int(bed_m.group(1))
+                    if not bathrooms:
+                        bath_m = re.search(r"(\d+)\s*(?:Bath)", txt, re.IGNORECASE)
+                        if bath_m:
+                            bathrooms = int(bath_m.group(1))
 
             # ── Ownership ─────────────────────────────────────────────────
             card_text = card.get_text(" ", strip=True).lower()
@@ -227,20 +235,25 @@ class FazWazParser(BaseParser):
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 
-    def _parse_thb(self, raw: str | None) -> float | None:
+    @staticmethod
+    def _parse_thb_first(raw: str | None) -> float | None:
+        """Extract FIRST price from text. Prevents concatenation when .price-tag
+        contains both total price and price-per-sqm on separate lines."""
         if not raw:
             return None
-        raw = raw.upper().replace(",", "").replace("THB", "").replace("฿", "").strip()
-        mult = 1
-        if "M" in raw:
-            mult = 1_000_000
-            raw = raw.replace("M", "")
-        elif "K" in raw:
-            mult = 1_000
-            raw = raw.replace("K", "")
-        cleaned = re.sub(r"[^\d.]", "", raw)
+        # Match: optional ฿, digits with commas, optional decimal, optional M/K suffix
+        m = re.search(r"฿?\s*([\d,]+(?:\.\d+)?)\s*(M\b|K\b)?", raw.upper())
+        if not m:
+            return None
+        digits = m.group(1).replace(",", "")
+        suffix = m.group(2) or ""
         try:
-            return float(cleaned) * mult
+            v = float(digits)
+            if suffix == "M":
+                v *= 1_000_000
+            elif suffix == "K":
+                v *= 1_000
+            return v
         except ValueError:
             return None
 
