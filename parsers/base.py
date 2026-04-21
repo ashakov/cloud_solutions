@@ -79,6 +79,7 @@ class BaseParser(ABC):
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-blink-features=AutomationControlled",
+        "--ignore-certificate-errors",
     ]
 
     # Headers to appear as a regular browser
@@ -100,12 +101,29 @@ class BaseParser(ABC):
     #  Lifecycle                                                           #
     # ------------------------------------------------------------------ #
 
+    # Prefer system-installed Chromium; fall back to Playwright's own download
+    _CHROMIUM_PATHS = [
+        "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
+        "/opt/pw-browsers/chromium-1140/chrome-linux/chrome",
+        "/usr/bin/chromium-browser",
+        "/usr/bin/chromium",
+    ]
+
+    @classmethod
+    def _chromium_executable(cls) -> str | None:
+        import os
+        for p in cls._CHROMIUM_PATHS:
+            if os.path.isfile(p):
+                return p
+        return None
+
     async def __aenter__(self) -> "BaseParser":
         self._playwright = await async_playwright().start()
-        self._browser = await self._playwright.chromium.launch(
-            headless=SCRAPER_HEADLESS,
-            args=self.BROWSER_ARGS,
-        )
+        exe = self._chromium_executable()
+        launch_kwargs = dict(headless=SCRAPER_HEADLESS, args=self.BROWSER_ARGS)
+        if exe:
+            launch_kwargs["executable_path"] = exe
+        self._browser = await self._playwright.chromium.launch(**launch_kwargs)
         self._context = await self._browser.new_context(
             user_agent=(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -115,6 +133,7 @@ class BaseParser(ABC):
             viewport={"width": 1280, "height": 800},
             extra_http_headers=self.EXTRA_HEADERS,
             locale="en-US",
+            ignore_https_errors=True,
         )
         await self._context.add_init_script(
             "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
