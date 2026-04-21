@@ -1,15 +1,19 @@
 """
 DotProperty parser — https://www.dotproperty.co.th
 
-Strategy:
-  1. Use Playwright to load search pages (SSR + lazy-load hydration).
-  2. Extract listing cards via CSS selectors with multiple fallbacks.
-  3. Scroll the page to trigger lazy loading before extracting.
+Site uses Next.js — full listing data lives in <script id="__NEXT_DATA__">.
+Primary strategy: parse __NEXT_DATA__ JSON (fast, reliable, no DOM selectors).
+Fallback: a[href*="/property/"] link extraction from rendered HTML.
+
+Confirmed URL pattern (2026-04):
+  https://www.dotproperty.co.th/properties-for-sale/phuket
+    ?location=bang-tao&property_type=Condominium&page=1
 """
+import json
 import logging
 import re
 from typing import AsyncIterator
-from urllib.parse import urljoin, urlencode
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
@@ -22,22 +26,20 @@ logger = logging.getLogger(__name__)
 class DotPropertyParser(BaseParser):
     SOURCE = "dotproperty"
 
-    # Working URL pattern confirmed via probe: ?location= filter works
     _SEARCH_URL = (
         "https://www.dotproperty.co.th/properties-for-sale/phuket"
         "?location={district}&property_type={prop_type}&page={page}"
     )
 
-    # DotProperty property type slugs
     _PROP_TYPE_MAP = {
-        "condo":      "Condominium",
-        "villa":      "Villa",
-        "house":      "House",
-        "townhouse":  "Townhouse",
-        "land":       "Land",
+        "condo":     "Condominium",
+        "villa":     "Villa",
+        "house":     "House",
+        "townhouse": "Townhouse",
+        "land":      "Land",
     }
 
-    _FREEHOLD_KW = {"freehold", "chanote", "โฉนด"}
+    _FREEHOLD_KW  = {"freehold", "chanote", "โฉนด"}
     _LEASEHOLD_KW = {"leasehold", "lease", "สัญญาเช่า"}
 
     async def scrape(
@@ -48,13 +50,9 @@ class DotPropertyParser(BaseParser):
         async with self:
             for page_num in range(1, max_pages + 1):
                 url = self._SEARCH_URL.format(
-                    district=district,
-                    prop_type=prop_slug,
-                    page=page_num,
+                    district=district, prop_type=prop_slug, page=page_num
                 )
-                logger.info(
-                    "[DotProperty] Scraping page %d — %s/%s", page_num, district, property_type
-                )
+                logger.info("[DotProperty] page %d — %s/%s", page_num, district, property_type)
 
                 page = await self._new_page()
                 ok = await self._goto(page, url)
@@ -62,248 +60,234 @@ class DotPropertyParser(BaseParser):
                     await page.close()
                     break
 
-                # Scroll to bottom to trigger lazy-loaded cards
-                await page.evaluate(
-                    "window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})"
-                )
-                await page.wait_for_timeout(2_000)
-
-                try:
-                    await page.wait_for_selector(
-                        ".listing-card, article[class*='listing'], "
-                        "div[class*='PropertyCard'], .property-item, "
-                        "li[class*='listing'], a[href*='/property/']",
-                        timeout=15_000,
-                    )
-                except Exception:
-                    logger.warning("[DotProperty] No cards on page %d", page_num)
-                    await page.close()
-                    break
+                # Scroll to trigger lazy-load
+                await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                await page.wait_for_timeout(2_500)
 
                 html = await page.content()
                 await page.close()
 
                 soup = BeautifulSoup(html, "lxml")
-                listings_found = 0
+                listings = list(self._parse_next_data(soup, district, property_type))
 
-                for listing in self._parse_page(soup, district, property_type):
-                    listings_found += 1
-                    yield listing
+                if not listings:
+                    # Fallback: extract from <a href="/property/..."> links
+                    listings = list(self._parse_links(soup, district, property_type))
 
-                if listings_found == 0:
-                    logger.info("[DotProperty] No listings at page %d, stopping", page_num)
+                logger.info("[DotProperty] %d listings on page %d", len(listings), page_num)
+
+                if not listings:
                     break
 
-    def _parse_page(
+                for item in listings:
+                    yield item
+
+                if len(listings) < 5:
+                    break
+
+    # ── Primary: __NEXT_DATA__ JSON ───────────────────────────────────────────
+
+    def _parse_next_data(
         self, soup: BeautifulSoup, district: str, property_type: str
     ):
-        cards = (
-            soup.select("article[class*='listing']")
-            or soup.select("div[class*='PropertyCard']")
-            or soup.select(".property-item")
-            or soup.select("li[class*='listing']")
-            or soup.select(".listing-card")
-        )
-
-        if not cards:
-            # Fallback: any <a> pointing to /property/ pages
-            seen_hrefs: set[str] = set()
-            for a in soup.select("a[href*='/property/']"):
-                href = a.get("href", "")
-                if href and href not in seen_hrefs:
-                    seen_hrefs.add(href)
-                    listing = self._minimal_listing(a, href, district, property_type)
-                    if listing:
-                        yield listing
+        script = soup.find("script", {"id": "__NEXT_DATA__"})
+        if not script:
+            logger.debug("[DotProperty] No __NEXT_DATA__ found")
             return
 
-        logger.debug("[DotProperty] Found %d cards", len(cards))
-        for card in cards:
-            result = self._extract_card(card, district, property_type)
-            if result:
-                yield result
-
-    def _extract_card(
-        self, card: BeautifulSoup, district: str, property_type: str
-    ) -> RawListing | None:
         try:
-            # URL
-            link = card.select_one("a[href*='/property/']") or card.find("a")
-            if not link:
-                return None
-            href = link.get("href", "")
-            if not href:
-                return None
-            url = href if href.startswith("http") else urljoin(DOTPROPERTY_BASE_URL, href)
-            source_id = re.sub(r"[^a-zA-Z0-9_-]", "_", href.strip("/").split("/")[-1])[:250]
+            data = json.loads(script.string)
+        except (json.JSONDecodeError, TypeError):
+            logger.warning("[DotProperty] Failed to parse __NEXT_DATA__ JSON")
+            return
 
-            # Price — DotProperty typically shows "฿ 3,500,000" or "THB 3.5M"
-            price_raw = self._text(card, [
-                "[class*='price']", "[class*='Price']",
-                "span[class*='amount']", ".asking-price",
-                "strong[class*='price']", "p[class*='price']",
-            ])
-            price_thb = self._parse_thb(price_raw)
+        # Navigate the Next.js page props tree to find listings
+        listings_raw = self._dig(data, [
+            "props", "pageProps", "listings",
+            "props", "pageProps", "data", "listings",
+            "props", "pageProps", "searchResults",
+            "props", "pageProps", "properties",
+            "props", "pageProps", "results",
+        ])
+
+        if not listings_raw:
+            logger.debug("[DotProperty] No listings array in __NEXT_DATA__")
+            return
+
+        logger.info("[DotProperty] __NEXT_DATA__ found %d raw items", len(listings_raw))
+        for item in listings_raw:
+            listing = self._map_next_item(item, district, property_type)
+            if listing:
+                yield listing
+
+    @staticmethod
+    def _dig(data: dict, paths: list) -> list | None:
+        """Try multiple key-path sequences to find a list of listings."""
+        for path in paths:
+            keys = path.split(", ") if isinstance(path, str) else path
+            node = data
+            try:
+                for key in keys:
+                    node = node[key]
+                if isinstance(node, list) and node:
+                    return node
+            except (KeyError, TypeError):
+                continue
+        # Deep search: find first list with >3 items containing dict with 'price'/'id'
+        def _search(obj, depth=0):
+            if depth > 6:
+                return None
+            if isinstance(obj, list) and len(obj) > 3:
+                if all(isinstance(i, dict) for i in obj[:3]):
+                    sample = obj[0]
+                    if any(k in sample for k in ("price", "listingPrice", "askingPrice", "id", "slug")):
+                        return obj
+            if isinstance(obj, dict):
+                for v in obj.values():
+                    result = _search(v, depth + 1)
+                    if result:
+                        return result
+            return None
+        return _search(data)
+
+    def _map_next_item(self, item: dict, district: str, property_type: str) -> RawListing | None:
+        try:
+            # ID and URL
+            slug = item.get("slug") or item.get("id") or str(item.get("listingId", ""))
+            source_id = re.sub(r"[^a-zA-Z0-9_-]", "_", str(slug))[:250]
+            if not source_id:
+                return None
+
+            path = item.get("url") or item.get("path") or f"/property/{slug}"
+            url = path if path.startswith("http") else urljoin(DOTPROPERTY_BASE_URL, path)
+
+            # Price
+            price_raw = (
+                item.get("price") or item.get("listingPrice") or
+                item.get("askingPrice") or item.get("priceThb")
+            )
+            price_thb = float(price_raw) if price_raw else None
 
             # Area
-            area_raw = self._text(card, [
-                "[class*='size']", "[class*='area']", "[class*='sqm']",
-                "span[class*='floor']",
-            ])
-            area_sqm = self._parse_sqm(area_raw)
+            area_raw = item.get("floorSize") or item.get("areaSqm") or item.get("size")
+            area_sqm = float(area_raw) if area_raw else None
 
             # Beds / baths
-            bed_raw = self._text(card, [
-                "[class*='bedroom']", "[class*='bed']",
-                "li[class*='bed']", "span[data-testid*='bed']",
-            ])
-            bath_raw = self._text(card, [
-                "[class*='bathroom']", "[class*='bath']",
-                "li[class*='bath']",
-            ])
+            bedrooms  = self._safe_int(item.get("bedrooms") or item.get("bedroom"))
+            bathrooms = self._safe_int(item.get("bathrooms") or item.get("bathroom"))
 
-            # Title / project
-            title_raw = self._text(card, [
-                "h2", "h3", "h4",
-                "[class*='title']", "[class*='name']",
-            ])
-
-            card_text = card.get_text(" ", strip=True).lower()
-            ownership = self._detect_ownership(card_text)
-            leasehold_years = (
-                self._detect_leasehold_years(card_text) if ownership == "leasehold" else None
+            # Title
+            title = (
+                item.get("title") or item.get("name") or
+                item.get("projectName") or item.get("project")
             )
+
+            # Location
+            loc = item.get("location") or item.get("area") or item.get("district") or {}
+            if isinstance(loc, dict):
+                subdistrict = loc.get("name") or loc.get("area") or ""
+            else:
+                subdistrict = str(loc) if loc else ""
+
+            # Ownership
+            own_raw = str(item.get("ownershipType") or item.get("ownership") or "").lower()
+            if "leasehold" in own_raw or "lease" in own_raw:
+                ownership = "leasehold"
+            elif "freehold" in own_raw or "chanote" in own_raw:
+                ownership = "freehold"
+            else:
+                ownership = "unknown"
+
+            # Features
+            features = item.get("features") or item.get("amenities") or []
+            feature_text = " ".join(str(f).lower() for f in features)
+            has_pool   = bool(re.search(r"pool", feature_text))
+            has_gym    = bool(re.search(r"gym|fitness", feature_text))
+            has_garden = bool(re.search(r"garden", feature_text))
+
+            # Rental / off-plan
+            is_off_plan = bool(item.get("isOffPlan") or item.get("offPlan") or
+                               re.search(r"off.?plan|pre.?sale", feature_text))
+            rental_prog = bool(item.get("rentalProgram") or
+                               re.search(r"rental program|guaranteed", feature_text))
 
             price_per_sqm = None
             if price_thb and area_sqm and area_sqm > 0:
-                price_per_sqm = price_thb / area_sqm
-
-            has_pool   = bool(re.search(r"\bpool\b|\bสระ", card_text))
-            has_garden = bool(re.search(r"\bgarden\b|\bสวน", card_text))
-            has_gym    = bool(re.search(r"\bgym\b|\bfitness", card_text))
-            is_off_plan = bool(re.search(r"off.?plan|pre.?sale|under construction", card_text))
-            rental_prog = bool(re.search(r"rental program|rental guarantee|guaranteed", card_text))
-            has_hl = bool(re.search(r"hotel licen[sc]e|hotel permit", card_text))
-
-            if re.search(r"short.?term|daily|weekly|holiday rental", card_text):
-                r_type = "short_term"
-            elif re.search(r"long.?term|annual|monthly rent", card_text):
-                r_type = "long_term"
-            else:
-                r_type = "unknown"
-
-            monthly_rent = None
-            rent_match = re.search(
-                r"(?:rent|rental)[^\d฿]*฿?\s*([\d,]+)\s*/\s*(?:month|mo\b)", card_text
-            )
-            if rent_match:
-                monthly_rent = self._parse_float(rent_match.group(1).replace(",", ""))
+                price_per_sqm = round(price_thb / area_sqm, 2)
 
             return RawListing(
                 source=self.SOURCE,
                 source_id=source_id,
                 url=url,
-                project_name=title_raw,
+                project_name=str(title) if title else None,
                 district=district,
+                subdistrict=subdistrict[:100] if subdistrict else None,
                 property_type=property_type,
                 ownership_type=ownership,
-                leasehold_years=leasehold_years,
-                bedrooms=self._parse_int(bed_raw),
-                bathrooms=self._parse_int(bath_raw),
+                bedrooms=bedrooms,
+                bathrooms=bathrooms,
                 area_sqm=area_sqm,
                 price_thb=price_thb,
                 price_per_sqm_thb=price_per_sqm,
-                monthly_rent_thb=monthly_rent,
-                rental_type=r_type,
                 rental_program=rental_prog,
-                has_hotel_license=has_hl,
                 has_pool=has_pool,
-                has_garden=has_garden,
                 has_gym=has_gym,
+                has_garden=has_garden,
                 is_off_plan=is_off_plan,
-                raw_data={
-                    "url": url,
-                    "price_raw": price_raw,
-                    "area_raw": area_raw,
-                    "card_text": card_text[:500],
-                },
+                raw_data={"source_json": {k: item[k] for k in list(item)[:20]}},
             )
         except Exception as exc:
-            logger.exception("[DotProperty] Card error: %s", exc)
+            logger.exception("[DotProperty] item map error: %s", exc)
             return None
 
-    def _minimal_listing(
-        self, tag: BeautifulSoup, href: str, district: str, property_type: str
-    ) -> RawListing | None:
-        url = href if href.startswith("http") else urljoin(DOTPROPERTY_BASE_URL, href)
-        source_id = re.sub(r"[^a-zA-Z0-9_-]", "_", href.strip("/").split("/")[-1])[:250]
-        text = tag.get_text(" ", strip=True)
-        price_thb = self._parse_thb(text)
-        return RawListing(
-            source=self.SOURCE,
-            source_id=source_id,
-            url=url,
-            district=district,
-            property_type=property_type,
-            price_thb=price_thb,
-            raw_data={"url": url, "link_text": text[:300]},
-        )
+    # ── Fallback: link extraction ─────────────────────────────────────────────
 
-    # ------------------------------------------------------------------ #
-    #  Helpers                                                             #
-    # ------------------------------------------------------------------ #
+    def _parse_links(self, soup: BeautifulSoup, district: str, property_type: str):
+        seen: set[str] = set()
+        for a in soup.select("a[href*='/property/']"):
+            href = a.get("href", "")
+            if not href or href in seen:
+                continue
+            seen.add(href)
+            url = href if href.startswith("http") else urljoin(DOTPROPERTY_BASE_URL, href)
+            source_id = re.sub(r"[^a-zA-Z0-9_-]", "_", href.strip("/").split("/")[-1])[:250]
+            if not source_id:
+                continue
+
+            text = a.get_text(" ", strip=True)
+            price_thb = self._parse_thb(text)
+            yield RawListing(
+                source=self.SOURCE,
+                source_id=source_id,
+                url=url,
+                district=district,
+                property_type=property_type,
+                price_thb=price_thb,
+                raw_data={"fallback": True, "link_text": text[:300]},
+            )
+
+    # ── Helpers ───────────────────────────────────────────────────────────────
 
     @staticmethod
-    def _text(soup: BeautifulSoup, selectors: list[str]) -> str | None:
-        for sel in selectors:
-            tag = soup.select_one(sel)
-            if tag:
-                t = tag.get_text(strip=True)
-                if t:
-                    return t
-        return None
+    def _safe_int(val) -> int | None:
+        try:
+            return int(val) if val is not None else None
+        except (ValueError, TypeError):
+            return None
 
     def _parse_thb(self, raw: str | None) -> float | None:
         if not raw:
             return None
         raw = raw.upper().replace(",", "").replace("THB", "").replace("฿", "").strip()
-        multiplier = 1
+        mult = 1
         if "M" in raw:
-            multiplier = 1_000_000
+            mult = 1_000_000
             raw = raw.replace("M", "")
         elif "K" in raw:
-            multiplier = 1_000
+            mult = 1_000
             raw = raw.replace("K", "")
         cleaned = re.sub(r"[^\d.]", "", raw)
         try:
-            return float(cleaned) * multiplier
+            return float(cleaned) * mult
         except ValueError:
             return None
-
-    @staticmethod
-    def _parse_sqm(raw: str | None) -> float | None:
-        if not raw:
-            return None
-        match = re.search(r"([\d,]+\.?\d*)\s*(?:sq\.?\s*m|m²|sqm)", raw, re.IGNORECASE)
-        if match:
-            return float(match.group(1).replace(",", ""))
-        cleaned = re.sub(r"[^\d.]", "", raw)
-        try:
-            val = float(cleaned)
-            return val if 0 < val < 10_000 else None
-        except ValueError:
-            return None
-
-    def _detect_ownership(self, text: str) -> str:
-        if any(k in text for k in self._LEASEHOLD_KW):
-            return "leasehold"
-        if any(k in text for k in self._FREEHOLD_KW):
-            return "freehold"
-        return "unknown"
-
-    @staticmethod
-    def _detect_leasehold_years(text: str) -> int | None:
-        match = re.search(r"(\d+)\s*[-–]?\s*year\s+lease", text, re.IGNORECASE)
-        if match:
-            return int(match.group(1))
-        return None
