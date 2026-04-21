@@ -40,7 +40,101 @@ async def cmd_benchmarks() -> None:
         print(f"Benchmarks rebuilt: {n} rows.")
 
 
-async def cmd_status() -> None:
+async def cmd_inspect(args: argparse.Namespace) -> None:
+    from db.database import init_db, AsyncSessionLocal
+    from db.models import Property, DistrictBenchmark
+    from sqlalchemy import select, func
+
+    await init_db()
+    async with AsyncSessionLocal() as session:
+
+        # ── Summary ───────────────────────────────────────────────────────
+        total = (await session.execute(select(func.count()).select_from(Property))).scalar()
+        print(f"\n{'='*65}")
+        print(f"  TOTAL PROPERTIES IN DB: {total}")
+        print(f"{'='*65}")
+
+        # ── By source ─────────────────────────────────────────────────────
+        rows = (await session.execute(
+            select(Property.source, func.count())
+            .group_by(Property.source)
+        )).all()
+        print("\n  By source:")
+        for source, cnt in rows:
+            print(f"    {source:<16} {cnt:>6}")
+
+        # ── By district ───────────────────────────────────────────────────
+        rows = (await session.execute(
+            select(Property.district, func.count())
+            .group_by(Property.district)
+            .order_by(func.count().desc())
+        )).all()
+        print("\n  By district:")
+        for district, cnt in rows:
+            print(f"    {(district or 'N/A'):<20} {cnt:>6}")
+
+        # ── Field fill-rate ───────────────────────────────────────────────
+        checks = [
+            ("price_thb",         Property.price_thb),
+            ("area_sqm",          Property.area_sqm),
+            ("price_per_sqm_thb", Property.price_per_sqm_thb),
+            ("bedrooms",          Property.bedrooms),
+            ("ownership_type≠?",  Property.ownership_type != "unknown"),
+            ("has_pool",          Property.has_pool),
+            ("is_off_plan",       Property.is_off_plan),
+            ("rental_program",    Property.rental_program),
+            ("has_hotel_license", Property.has_hotel_license),
+        ]
+        print(f"\n  Field fill-rate (out of {total}):")
+        for label, col in checks:
+            n = (await session.execute(
+                select(func.count()).select_from(Property).where(col != None)  # noqa: E711
+            )).scalar()
+            bar = "█" * int(20 * n / total) if total else ""
+            print(f"    {label:<24} {n:>5}  {bar} {100*n//total if total else 0}%")
+
+        # ── Sample listings ───────────────────────────────────────────────
+        samples = (await session.execute(
+            select(Property)
+            .where(Property.price_thb != None, Property.area_sqm != None)
+            .order_by(Property.scraped_at.desc())
+            .limit(args.n)
+        )).scalars().all()
+
+        print(f"\n  Last {args.n} listings with price+area:")
+        print(f"  {'Project':<30} {'District':<14} {'฿/m²':>8} {'Price THB':>12} {'m²':>6} {'Beds':>4} {'Own':<10}")
+        print(f"  {'-'*90}")
+        for p in samples:
+            print(
+                f"  {(p.project_name or 'N/A')[:29]:<30} "
+                f"{(p.district or '')[:13]:<14} "
+                f"{p.price_per_sqm_thb:>8,.0f} "
+                f"{p.price_thb:>12,.0f} "
+                f"{p.area_sqm:>6.0f} "
+                f"{(p.bedrooms or 0):>4} "
+                f"{(p.ownership_type or ''):<10}"
+            )
+
+        # ── Benchmarks ────────────────────────────────────────────────────
+        bmarks = (await session.execute(
+            select(DistrictBenchmark)
+            .where(DistrictBenchmark.ownership_type == "all")
+            .order_by(DistrictBenchmark.median_price_per_sqm.desc())
+        )).scalars().all()
+        if bmarks:
+            print(f"\n  District benchmarks (condo+villa, all ownership):")
+            print(f"  {'District':<16} {'Type':<8} {'Median ฿/m²':>12} {'P25':>10} {'P75':>10} {'N':>5}")
+            print(f"  {'-'*65}")
+            for b in bmarks:
+                print(
+                    f"  {b.district:<16} {b.property_type:<8} "
+                    f"{b.median_price_per_sqm:>12,.0f} "
+                    f"{b.p25_price_per_sqm:>10,.0f} "
+                    f"{b.p75_price_per_sqm:>10,.0f} "
+                    f"{b.sample_count:>5}"
+                )
+        print()
+
     from db.database import init_db, AsyncSessionLocal
     from db.models import ScraperRun
     from sqlalchemy import select
@@ -83,6 +177,10 @@ def main() -> None:
     # status
     sub.add_parser("status", help="Show recent scraper run history")
 
+    # inspect
+    p_inspect = sub.add_parser("inspect", help="Show DB contents: fill-rate, samples, benchmarks")
+    p_inspect.add_argument("--n", type=int, default=10, help="Number of sample listings to show")
+
     # seed
     p_seed = sub.add_parser("seed", help="Populate DB with synthetic Phuket data (no internet needed)")
     p_seed.add_argument("--count", type=int, default=40, help="Listings per district/type/ownership combo")
@@ -98,6 +196,8 @@ def main() -> None:
     elif args.command == "seed":
         from scrapers.seeder import seed
         asyncio.run(seed(listings_per_combo=args.count))
+    elif args.command == "inspect":
+        asyncio.run(cmd_inspect(args))
     else:
         parser.print_help()
         sys.exit(1)
