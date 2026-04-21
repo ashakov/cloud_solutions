@@ -58,24 +58,55 @@ class FazWazParser(BaseParser):
     _FREEHOLD_KW = {"freehold", "โฉนด", "chanote"}
     _LEASEHOLD_KW = {"leasehold", "สัญญาเช่า"}
 
-    def _build_url(self, district: str, type_id: str, page: int) -> str:
-        area_name = self._DISTRICT_NAMES.get(district, district.replace("-", " ").title())
+    # Maps substrings in .location-unit text → canonical district slug
+    _LOCATION_MAP: dict[str, str] = {
+        "bang tao":     "bang-tao",
+        "bangtao":      "bang-tao",
+        "laguna":       "bang-tao",
+        "kamala":       "kamala",
+        "patong":       "patong",
+        "kata":         "kata",
+        "karon":        "karon",
+        "rawai":        "rawai",
+        "nai harn":     "nai-harn",
+        "naiharn":      "nai-harn",
+        "surin":        "surin",
+        "cherng talay": "cherng-talay",
+        "cheng talay":  "cherng-talay",
+        "mai khao":     "mai-khao",
+        "maikhao":      "mai-khao",
+        "chalong":      "chalong",
+        "phuket town":  "phuket-town",
+        "layan":        "layan",
+        "thalang":      "thalang",
+    }
+
+    def _location_to_district(self, text: str) -> str:
+        t = text.lower()
+        for key, slug in self._LOCATION_MAP.items():
+            if key in t:
+                return slug
+        return "phuket-other"
+
+    def _build_url(self, type_id: str, page: int) -> str:
+        """No district filter — FazWaz ignores it server-side anyway."""
         return (
             f"{self._BASE_SEARCH}"
             f"?real_estate_type_id={type_id}"
-            f"&search%5Barea_name%5D%5B0%5D={quote_plus(area_name)}"
             f"&page={page}"
         )
 
     async def scrape(
         self, district: str, property_type: str = "condo", max_pages: int = SCRAPER_MAX_PAGES
     ) -> AsyncIterator[RawListing]:
+        """district param is ignored in URL (FazWaz server-side filter is broken).
+        Actual district is parsed from each card's .location-unit text."""
         type_id = self._TYPE_IDS.get(property_type, "1")
 
         async with self:
             for page_num in range(1, max_pages + 1):
-                url = self._build_url(district, type_id, page_num)
-                logger.info("[FazWaz] page %d — %s/%s", page_num, district, property_type)
+                url = self._build_url(type_id, page_num)
+                logger.info("[FazWaz] page %d — phuket/%s", page_num, property_type)
 
                 page = await self._new_page()
                 ok = await self._goto(page, url)
@@ -133,9 +164,11 @@ class FazWazParser(BaseParser):
             title_tag = card.select_one(".unit-name") or card.select_one(".unit-info_title")
             title = title_tag.get_text(strip=True) if title_tag else None
 
-            # ── Location ──────────────────────────────────────────────────
+            # ── Location → parse real district from card text ─────────────
             loc_tag = card.select_one(".location-unit")
             location_text = loc_tag.get_text(strip=True) if loc_tag else ""
+            # Override the caller-supplied district with the real one from the card
+            district = self._location_to_district(location_text)
 
             # ── Features: beds / baths / sqm ─────────────────────────────
             # Strategy 1: .unit-info__shot-description — "1 Bed | 1 Bath | 35 SqM"

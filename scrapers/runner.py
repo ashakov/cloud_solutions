@@ -1,6 +1,13 @@
 """
-Scraper orchestrator — runs all parsers in sequence per district/type combo,
-persists results, and rebuilds benchmarks.
+Scraper orchestrator — runs all parsers, persists results, rebuilds benchmarks.
+
+FazWaz note: their server-side district filter is broken — it always returns
+all Phuket listings regardless of area_name param. FazWazParser therefore
+ignores the district param in the URL and parses the real district from each
+card's .location-unit text. We run it once per property type (not per district).
+
+DotProperty does support district filtering via ?location=, so we run it
+once per district × property type.
 """
 import asyncio
 import logging
@@ -9,7 +16,7 @@ from typing import Type
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from config import PHUKET_DISTRICTS, PROPERTY_TYPES, SCRAPER_MAX_PAGES
+from config import SCRAPER_MAX_PAGES
 from db.database import AsyncSessionLocal, init_db
 from db.models import ScraperRun
 from parsers.base import BaseParser
@@ -21,12 +28,14 @@ logger = logging.getLogger(__name__)
 
 ALL_PARSERS: list[Type[BaseParser]] = [FazWazParser, DotPropertyParser]
 
-# For MVP, only scrape the highest-demand districts and condos/villas
 DEFAULT_DISTRICTS = [
     "bang-tao", "kamala", "surin", "layan",
     "rawai", "nai-harn", "patong", "cherng-talay",
 ]
 DEFAULT_PROP_TYPES = ["condo", "villa"]
+
+# Parsers that return ALL districts in one pass (server ignores district filter)
+DISTRICT_AGNOSTIC = {FazWazParser.SOURCE}
 
 
 async def run_parser(
@@ -93,26 +102,38 @@ async def run_all(
     property_types: list[str] | None = None,
     parsers: list[Type[BaseParser]] | None = None,
 ) -> None:
-    """Main entry point: scrape all combos then rebuild benchmarks."""
+    """Main entry point: scrape then rebuild benchmarks.
+
+    District-agnostic parsers (FazWaz) run once per property type.
+    District-aware parsers (DotProperty) run once per district × type.
+    """
     await init_db()
 
     districts = districts or DEFAULT_DISTRICTS
     property_types = property_types or DEFAULT_PROP_TYPES
     parsers = parsers or ALL_PARSERS
 
-    total_runs = len(parsers) * len(districts) * len(property_types)
-    logger.info(
-        "Starting scrape: %d parsers × %d districts × %d types = %d runs",
-        len(parsers), len(districts), len(property_types), total_runs,
-    )
-
     async with AsyncSessionLocal() as session:
         for parser_cls in parsers:
-            for district in districts:
+            if parser_cls.SOURCE in DISTRICT_AGNOSTIC:
+                # Run once per type — district is parsed from each card
+                logger.info(
+                    "[%s] district-agnostic: running %d type(s) × 1",
+                    parser_cls.SOURCE, len(property_types),
+                )
                 for prop_type in property_types:
-                    await run_parser(parser_cls, district, prop_type, session)
-                    # Polite inter-run delay
+                    await run_parser(parser_cls, "all-phuket", prop_type, session)
                     await asyncio.sleep(3)
+            else:
+                # Run per district × type
+                logger.info(
+                    "[%s] district-aware: %d districts × %d types",
+                    parser_cls.SOURCE, len(districts), len(property_types),
+                )
+                for district in districts:
+                    for prop_type in property_types:
+                        await run_parser(parser_cls, district, prop_type, session)
+                        await asyncio.sleep(3)
 
         logger.info("All parsers done. Rebuilding benchmarks...")
         n = await rebuild_benchmarks(session)
