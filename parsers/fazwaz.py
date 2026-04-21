@@ -60,25 +60,32 @@ class FazWazParser(BaseParser):
 
     # Maps substrings in .location-unit text → canonical district slug
     _LOCATION_MAP: dict[str, str] = {
-        "bang tao":     "bang-tao",
-        "bangtao":      "bang-tao",
-        "laguna":       "bang-tao",
-        "kamala":       "kamala",
-        "patong":       "patong",
-        "kata":         "kata",
-        "karon":        "karon",
-        "rawai":        "rawai",
-        "nai harn":     "nai-harn",
-        "naiharn":      "nai-harn",
-        "surin":        "surin",
-        "cherng talay": "cherng-talay",
-        "cheng talay":  "cherng-talay",
-        "mai khao":     "mai-khao",
-        "maikhao":      "mai-khao",
-        "chalong":      "chalong",
-        "phuket town":  "phuket-town",
-        "layan":        "layan",
-        "thalang":      "thalang",
+        "bang tao":       "bang-tao",
+        "bangtao":        "bang-tao",
+        "laguna":         "bang-tao",
+        "kamala":         "kamala",
+        "patong":         "patong",
+        "kata":           "kata",
+        "karon":          "karon",
+        "rawai":          "rawai",
+        "nai harn":       "nai-harn",
+        "naiharn":        "nai-harn",
+        "surin":          "surin",
+        "choeng thale":   "cherng-talay",   # "Choeng Thale, Thalang" — most common
+        "choeng thalay":  "cherng-talay",
+        "cherng talay":   "cherng-talay",
+        "cheng talay":    "cherng-talay",
+        "si sunthon":     "layan",           # Si Sunthon subdistrict borders Layan/Bang Tao
+        "mai khao":       "mai-khao",
+        "maikhao":        "mai-khao",
+        "sakhu":          "mai-khao",        # Sakhu subdistrict, north Phuket
+        "pa khlok":       "pa-khlok",        # east-coast subdistrict
+        "kathu":          "kathu",
+        "chalong":        "chalong",
+        "phuket town":    "phuket-town",
+        "layan":          "layan",
+        "thep krasattri": "thalang",         # true Thalang subdistrict
+        "thalang":        "thalang",
     }
 
     def _location_to_district(self, text: str) -> str:
@@ -88,25 +95,36 @@ class FazWazParser(BaseParser):
                 return slug
         return "phuket-other"
 
-    def _build_url(self, type_id: str, page: int) -> str:
-        """No district filter — FazWaz ignores it server-side anyway."""
-        return (
-            f"{self._BASE_SEARCH}"
-            f"?real_estate_type_id={type_id}"
-            f"&page={page}"
-        )
+    # Keywords to infer property_type from card title/text (server filter is broken)
+    _TYPE_KW = {
+        "villa":      {"villa", "pool villa", "private villa"},
+        "house":      {"house", "detached house", "single house", "townhouse"},
+        "land":       {"land", "plot", "rai"},
+        "condo":      {"condo", "condominium", "apartment", "studio"},
+    }
+
+    def _detect_property_type(self, title: str, card_text: str) -> str:
+        t = (title or "").lower() + " " + card_text[:300].lower()
+        for ptype, kws in self._TYPE_KW.items():
+            if any(kw in t for kw in kws):
+                return ptype
+        return "condo"  # safe default for Phuket
+
+    def _build_url(self, page: int) -> str:
+        """No type/district filter — FazWaz ignores them server-side."""
+        return f"{self._BASE_SEARCH}?page={page}"
 
     async def scrape(
         self, district: str, property_type: str = "condo", max_pages: int = SCRAPER_MAX_PAGES
     ) -> AsyncIterator[RawListing]:
-        """district param is ignored in URL (FazWaz server-side filter is broken).
-        Actual district is parsed from each card's .location-unit text."""
-        type_id = self._TYPE_IDS.get(property_type, "1")
+        """Both district and property_type params are ignored in the URL — FazWaz
+        server-side filters are broken.  District is parsed from .location-unit text
+        and property_type is inferred from card title keywords."""
 
         async with self:
             for page_num in range(1, max_pages + 1):
-                url = self._build_url(type_id, page_num)
-                logger.info("[FazWaz] page %d — phuket/%s", page_num, property_type)
+                url = self._build_url(page_num)
+                logger.info("[FazWaz] page %d — phuket (all types)", page_num)
 
                 page = await self._new_page()
                 ok = await self._goto(page, url)
@@ -167,8 +185,11 @@ class FazWazParser(BaseParser):
             # ── Location → parse real district from card text ─────────────
             loc_tag = card.select_one(".location-unit")
             location_text = loc_tag.get_text(strip=True) if loc_tag else ""
-            # Override the caller-supplied district with the real one from the card
             district = self._location_to_district(location_text)
+
+            # ── Property type — inferred from title+card (server filter broken) ──
+            card_text_raw = card.get_text(" ", strip=True)
+            property_type = self._detect_property_type(title or "", card_text_raw)
 
             # ── Features: beds / baths / sqm ─────────────────────────────
             # Strategy 1: .unit-info__shot-description — "1 Bed | 1 Bath | 35 SqM"
@@ -205,7 +226,7 @@ class FazWazParser(BaseParser):
                             bathrooms = int(bath_m.group(1))
 
             # ── Ownership ─────────────────────────────────────────────────
-            card_text = card.get_text(" ", strip=True).lower()
+            card_text = card_text_raw.lower()
             ownership = self._detect_ownership(card_text)
             leasehold_years = self._detect_leasehold_years(card_text) if ownership == "leasehold" else None
 

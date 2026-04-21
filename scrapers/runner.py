@@ -116,14 +116,11 @@ async def run_all(
     async with AsyncSessionLocal() as session:
         for parser_cls in parsers:
             if parser_cls.SOURCE in DISTRICT_AGNOSTIC:
-                # Run once per type — district is parsed from each card
-                logger.info(
-                    "[%s] district-agnostic: running %d type(s) × 1",
-                    parser_cls.SOURCE, len(property_types),
-                )
-                for prop_type in property_types:
-                    await run_parser(parser_cls, "all-phuket", prop_type, session)
-                    await asyncio.sleep(3)
+                # Run ONCE total — server ignores both district and type filters.
+                # District and property_type are inferred per-card inside the parser.
+                logger.info("[%s] district-agnostic + type-agnostic: single run", parser_cls.SOURCE)
+                await run_parser(parser_cls, "all-phuket", "all", session)
+                await asyncio.sleep(3)
             else:
                 # Run per district × type
                 logger.info(
