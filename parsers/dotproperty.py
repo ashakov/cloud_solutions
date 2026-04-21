@@ -22,18 +22,19 @@ logger = logging.getLogger(__name__)
 class DotPropertyParser(BaseParser):
     SOURCE = "dotproperty"
 
+    # Working URL pattern confirmed via probe: ?location= filter works
     _SEARCH_URL = (
-        "https://www.dotproperty.co.th/properties-for-sale/phuket/{district}"
-        "?property_type={prop_type}&page={page}"
+        "https://www.dotproperty.co.th/properties-for-sale/phuket"
+        "?location={district}&property_type={prop_type}&page={page}"
     )
 
-    # DotProperty uses slug-style property types
+    # DotProperty property type slugs
     _PROP_TYPE_MAP = {
-        "condo": "Condominium",
-        "villa": "Villa",
-        "house": "House",
-        "townhouse": "Townhouse",
-        "land": "Land",
+        "condo":      "Condominium",
+        "villa":      "Villa",
+        "house":      "House",
+        "townhouse":  "Townhouse",
+        "land":       "Land",
     }
 
     _FREEHOLD_KW = {"freehold", "chanote", "โฉนด"}
