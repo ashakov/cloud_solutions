@@ -40,6 +40,25 @@ async def cmd_benchmarks() -> None:
         print(f"Benchmarks rebuilt: {n} rows.")
 
 
+async def cmd_locations(args: argparse.Namespace) -> None:
+    """Show unique raw subdistrict/location values from DB — helps fix district mapping."""
+    from db.database import init_db, AsyncSessionLocal
+    from db.models import Property
+    from sqlalchemy import select, func
+
+    await init_db()
+    async with AsyncSessionLocal() as session:
+        rows = (await session.execute(
+            select(Property.district, Property.subdistrict, func.count())
+            .group_by(Property.district, Property.subdistrict)
+            .order_by(Property.district, func.count().desc())
+        )).all()
+        print(f"\n{'District':<20} {'Count':>6}  Raw location text")
+        print("-" * 80)
+        for district, subdistrict, cnt in rows:
+            print(f"{(district or ''):<20} {cnt:>6}  {subdistrict or ''}")
+
+
 async def cmd_inspect(args: argparse.Namespace) -> None:
     from db.database import init_db, AsyncSessionLocal
     from db.models import Property, DistrictBenchmark
@@ -181,6 +200,9 @@ def main() -> None:
     p_inspect = sub.add_parser("inspect", help="Show DB contents: fill-rate, samples, benchmarks")
     p_inspect.add_argument("--n", type=int, default=10, help="Number of sample listings to show")
 
+    # locations
+    sub.add_parser("locations", help="Show unique raw location texts — helps fix district mapping")
+
     # seed
     p_seed = sub.add_parser("seed", help="Populate DB with synthetic Phuket data (no internet needed)")
     p_seed.add_argument("--count", type=int, default=40, help="Listings per district/type/ownership combo")
@@ -198,6 +220,8 @@ def main() -> None:
         asyncio.run(seed(listings_per_combo=args.count))
     elif args.command == "inspect":
         asyncio.run(cmd_inspect(args))
+    elif args.command == "locations":
+        asyncio.run(cmd_locations(args))
     else:
         parser.print_help()
         sys.exit(1)
