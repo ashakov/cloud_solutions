@@ -16,10 +16,14 @@ from utils.logging_setup import setup_logging
 from scrapers.runner import run_all, ALL_PARSERS, DEFAULT_DISTRICTS, DEFAULT_PROP_TYPES
 from parsers.fazwaz import FazWazParser
 from parsers.dotproperty import DotPropertyParser
+from parsers.fazwaz_rental import FazWazRentalParser
+from parsers.airbnb import AirbnbParser
 
 SOURCE_MAP = {
-    "fazwaz": FazWazParser,
-    "dotproperty": DotPropertyParser,
+    "fazwaz":       FazWazParser,
+    "dotproperty":  DotPropertyParser,
+    "fazwaz_rent":  FazWazRentalParser,
+    "airbnb":       AirbnbParser,
 }
 
 
@@ -71,6 +75,117 @@ def cmd_kpi(args: argparse.Namespace) -> None:
         print(f"\n── {scenario.upper()} ──")
         print(r.summary())
     print()
+
+
+async def cmd_rent(args: argparse.Namespace) -> None:
+    """Run rental scrapers (FazWaz rent and/or Airbnb) and store results."""
+    from db.database import init_db, AsyncSessionLocal
+    from db.models import RentalListing
+    from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+
+    await init_db()
+
+    sources = (["fazwaz_rent", "airbnb"] if args.source == "all"
+               else [args.source])
+
+    total_new = total_seen = 0
+
+    for source_name in sources:
+        parser_cls = SOURCE_MAP[source_name]
+        parser = parser_cls()
+        print(f"\n[{source_name}] starting...")
+
+        async def _run(p, src):
+            nonlocal total_new, total_seen
+            if src == "airbnb":
+                gen = p.scrape(seasons=args.seasons)
+            else:
+                gen = p.scrape(max_pages=args.pages)
+
+            async with AsyncSessionLocal() as session:
+                batch: list[RawRentalListing] = []
+                async for listing in gen:
+                    batch.append(listing)
+                    total_seen += 1
+                    if len(batch) >= 50:
+                        total_new += await _upsert_rentals(session, batch)
+                        batch.clear()
+                if batch:
+                    total_new += await _upsert_rentals(session, batch)
+
+        from parsers.fazwaz_rental import RawRentalListing
+        await _run(parser, source_name)
+        print(f"[{source_name}] done. seen={total_seen} new/updated={total_new}")
+
+    print(f"\nRental scrape complete. Total seen={total_seen} new={total_new}")
+
+
+async def _upsert_rentals(session, listings: list) -> int:
+    """Insert or update rental listings; return count of new rows."""
+    from db.models import RentalListing
+    from sqlalchemy import select
+    from datetime import datetime
+
+    new_count = 0
+    for raw in listings:
+        existing = (await session.execute(
+            select(RentalListing).where(
+                RentalListing.source == raw.source,
+                RentalListing.source_id == raw.source_id,
+            )
+        )).scalar_one_or_none()
+
+        if existing is None:
+            row = RentalListing(
+                source=raw.source, source_id=raw.source_id, url=raw.url,
+                district=raw.district, property_type=raw.property_type,
+                bedrooms=raw.bedrooms, bathrooms=raw.bathrooms,
+                area_sqm=raw.area_sqm, max_guests=raw.max_guests,
+                has_pool=raw.has_pool, has_gym=raw.has_gym,
+                has_sea_view=raw.has_sea_view, has_parking=raw.has_parking,
+                distance_to_beach_m=raw.distance_to_beach_m,
+                has_management_company=raw.has_management_company,
+                daily_rate_high_thb=(raw.daily_rate_thb
+                                     if raw.season_tag in ("high", None) else None),
+                daily_rate_peak_thb=(raw.daily_rate_thb
+                                     if raw.season_tag == "peak" else None),
+                daily_rate_shoulder_thb=(raw.daily_rate_thb
+                                         if raw.season_tag == "shoulder" else None),
+                daily_rate_low_thb=(raw.daily_rate_thb
+                                    if raw.season_tag == "low" else None),
+                monthly_rate_high_season_thb=raw.monthly_rate_thb,
+                annual_rate_thb=raw.annual_rate_thb if hasattr(raw, "annual_rate_thb") else None,
+                min_stay_nights=raw.min_stay_nights,
+                rental_type=raw.rental_type,
+                claimed_occupancy_rate=raw.claimed_occupancy_rate if hasattr(raw, "claimed_occupancy_rate") else None,
+                platform_reviews_count=raw.platform_reviews_count,
+                platform_rating=raw.platform_rating,
+                management_fee_pct=raw.management_fee_pct,
+                scraped_at=raw.scraped_at,
+                updated_at=raw.scraped_at,
+            )
+            row.set_raw(raw.raw_data)
+            session.add(row)
+            new_count += 1
+        else:
+            # Update seasonal rate slot if scraped with a specific season tag
+            tag = raw.season_tag
+            if tag == "peak" and raw.daily_rate_thb:
+                existing.daily_rate_peak_thb = raw.daily_rate_thb
+            elif tag == "high" and raw.daily_rate_thb:
+                existing.daily_rate_high_thb = raw.daily_rate_thb
+            elif tag == "shoulder" and raw.daily_rate_thb:
+                existing.daily_rate_shoulder_thb = raw.daily_rate_thb
+            elif tag == "low" and raw.daily_rate_thb:
+                existing.daily_rate_low_thb = raw.daily_rate_thb
+            if raw.platform_reviews_count:
+                existing.platform_reviews_count = raw.platform_reviews_count
+            if raw.platform_rating:
+                existing.platform_rating = raw.platform_rating
+            existing.updated_at = datetime.utcnow()
+
+    await session.commit()
+    return new_count
 
 
 async def cmd_locations(args: argparse.Namespace) -> None:
@@ -223,6 +338,16 @@ def main() -> None:
     p_scrape.add_argument("--type", dest="type", help="Property type: condo|villa|house")
     p_scrape.add_argument("--source", choices=list(SOURCE_MAP), help="Single source to run")
 
+    # rent
+    p_rent = sub.add_parser("rent", help="Run rental scrapers (fazwaz_rent, airbnb)")
+    p_rent.add_argument("--source", choices=["fazwaz_rent", "airbnb", "all"],
+                        default="all", help="Rental source (default: all)")
+    p_rent.add_argument("--seasons", nargs="+",
+                        choices=["peak", "high", "shoulder", "low"],
+                        help="Airbnb season passes to run (default: all 4)")
+    p_rent.add_argument("--pages", type=int, default=5,
+                        help="Max pages per source (default: 5)")
+
     # benchmarks
     sub.add_parser("benchmarks", help="Recalculate district benchmarks from existing data")
 
@@ -259,6 +384,8 @@ def main() -> None:
 
     if args.command == "scrape":
         asyncio.run(cmd_scrape(args))
+    elif args.command == "rent":
+        asyncio.run(cmd_rent(args))
     elif args.command == "benchmarks":
         asyncio.run(cmd_benchmarks())
     elif args.command == "status":
