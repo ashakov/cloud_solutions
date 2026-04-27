@@ -40,6 +40,39 @@ async def cmd_benchmarks() -> None:
         print(f"Benchmarks rebuilt: {n} rows.")
 
 
+def cmd_kpi(args: argparse.Namespace) -> None:
+    from core.kpi_engine import KPIParams, all_scenarios
+    from core.seasonality import implied_daily_rates
+
+    daily_high = args.daily_high
+    daily_peak = args.daily_peak or round(daily_high * 1.55, 0)
+    daily_low  = args.daily_low  or round(daily_high * 0.55, 0)
+    daily_shoulder = round(daily_high * 0.75, 0)
+
+    params = KPIParams(
+        purchase_price_thb=args.price,
+        area_sqm=args.sqm,
+        furniture_cost_thb=args.furniture,
+        daily_peak_thb=daily_peak,
+        daily_high_thb=daily_high,
+        daily_shoulder_thb=daily_shoulder,
+        daily_low_thb=daily_low,
+        management_fee_pct=args.mgmt_fee,
+    )
+
+    results = all_scenarios(params)
+
+    print(f"\n{'='*55}")
+    print(f"  KPI ANALYSIS  —  ฿{args.price:,.0f}  |  {args.sqm:.0f} m²")
+    print(f"  Nightly rates: peak ฿{daily_peak:,.0f}  high ฿{daily_high:,.0f}"
+          f"  shoulder ฿{daily_shoulder:,.0f}  low ฿{daily_low:,.0f}")
+    print(f"{'='*55}")
+    for scenario, r in results.items():
+        print(f"\n── {scenario.upper()} ──")
+        print(r.summary())
+    print()
+
+
 async def cmd_locations(args: argparse.Namespace) -> None:
     """Show unique raw subdistrict/location values from DB — helps fix district mapping."""
     from db.database import init_db, AsyncSessionLocal
@@ -203,6 +236,21 @@ def main() -> None:
     # locations
     sub.add_parser("locations", help="Show unique raw location texts — helps fix district mapping")
 
+    # kpi
+    p_kpi = sub.add_parser("kpi", help="Calculate investment KPIs for a property")
+    p_kpi.add_argument("--price",      type=float, required=True, help="Purchase price THB")
+    p_kpi.add_argument("--sqm",        type=float, required=True, help="Area m²")
+    p_kpi.add_argument("--daily-high", type=float, required=True, dest="daily_high",
+                       help="Comparable nightly rate in high season (THB)")
+    p_kpi.add_argument("--daily-peak", type=float, dest="daily_peak",
+                       help="Peak nightly rate (default: high × 1.55)")
+    p_kpi.add_argument("--daily-low",  type=float, dest="daily_low",
+                       help="Low/monsoon nightly rate (default: high × 0.55)")
+    p_kpi.add_argument("--furniture",  type=float, default=0.0,
+                       help="Furniture + fitout cost THB (default: 0)")
+    p_kpi.add_argument("--mgmt-fee",   type=float, dest="mgmt_fee", default=None,
+                       help="Management fee fraction 0–1 (default: 0.25)")
+
     # seed
     p_seed = sub.add_parser("seed", help="Populate DB with synthetic Phuket data (no internet needed)")
     p_seed.add_argument("--count", type=int, default=40, help="Listings per district/type/ownership combo")
@@ -215,6 +263,8 @@ def main() -> None:
         asyncio.run(cmd_benchmarks())
     elif args.command == "status":
         asyncio.run(cmd_status())
+    elif args.command == "kpi":
+        cmd_kpi(args)
     elif args.command == "seed":
         from scrapers.seeder import seed
         asyncio.run(seed(listings_per_combo=args.count))
