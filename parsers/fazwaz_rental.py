@@ -240,24 +240,40 @@ class FazWazRentalParser(BaseParser):
             district = self._location_to_district(location_text)
 
             # ── Beds / baths / sqm ──────────────────────────────────────────
+            # Primary source: .wrap-icon-info → "3 Bedroom(s) 3 Bathroom(s) 150 SqM"
             bedrooms = bathrooms = None
             area_sqm = None
-            desc = card.select_one(".unit-info__shot-description")
-            if desc:
-                t = desc.get_text(" ", strip=True)
-                if m := re.search(r"(\d+)\s*(?:Bed|BR)", t, re.IGNORECASE):
+            wrap = card.select_one(".wrap-icon-info")
+            if wrap:
+                wt = wrap.get_text(" ", strip=True)
+                if m := re.search(r"(\d+)\s*Bedroom", wt, re.IGNORECASE):
                     bedrooms = int(m.group(1))
-                if m := re.search(r"(\d+)\s*(?:Bath)", t, re.IGNORECASE):
-                    bathrooms = int(m.group(1))
-                if m := re.search(r"([\d,]+)\s*(?:SqM|m²)", t, re.IGNORECASE):
+                if m := re.search(r"([\d.]+)\s*Bathroom", wt, re.IGNORECASE):
+                    bathrooms = int(float(m.group(1)))
+                if m := re.search(r"([\d,]+(?:\.\d+)?)\s*SqM", wt, re.IGNORECASE):
                     area_sqm = float(m.group(1).replace(",", ""))
 
-            if not area_sqm:
-                for feat in card.select(".unit-info__feature"):
-                    ft = feat.get_text(" ", strip=True)
-                    if m := re.search(r"([\d,]+)\s*(?:SqM|m²)", ft, re.IGNORECASE):
-                        area_sqm = float(m.group(1).replace(",", ""))
-                        break
+            # Fallback: description title "3 Bedroom House for rent at…"
+            if bedrooms is None:
+                dt = card.select_one(".unit-info__description-title")
+                if dt:
+                    if m := re.search(r"(\d+)\s*Bedroom", dt.get_text(strip=True), re.IGNORECASE):
+                        bedrooms = int(m.group(1))
+
+            # Fallback: shot-description prose
+            if bedrooms is None or area_sqm is None:
+                desc = card.select_one(".unit-info__shot-description")
+                if desc:
+                    t = desc.get_text(" ", strip=True)
+                    if bedrooms is None:
+                        if m := re.search(r"(\d+)\s*(?:Bed|BR)", t, re.IGNORECASE):
+                            bedrooms = int(m.group(1))
+                    if bathrooms is None:
+                        if m := re.search(r"(\d+)\s*(?:Bath)", t, re.IGNORECASE):
+                            bathrooms = int(m.group(1))
+                    if area_sqm is None:
+                        if m := re.search(r"([\d,]+)\s*(?:SqM|m²)", t, re.IGNORECASE):
+                            area_sqm = float(m.group(1).replace(",", ""))
 
             # ── Card full text for keyword matching ──────────────────────────
             card_text = card.get_text(" ", strip=True)

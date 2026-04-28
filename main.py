@@ -204,6 +204,12 @@ async def _upsert_rentals(session, listings: list) -> int:
                 existing.platform_reviews_count = raw.platform_reviews_count
             if raw.platform_rating:
                 existing.platform_rating = raw.platform_rating
+            if raw.bedrooms is not None and existing.bedrooms is None:
+                existing.bedrooms = raw.bedrooms
+            if raw.bathrooms is not None and existing.bathrooms is None:
+                existing.bathrooms = raw.bathrooms
+            if raw.area_sqm is not None and existing.area_sqm is None:
+                existing.area_sqm = raw.area_sqm
             existing.updated_at = datetime.utcnow()
 
     await session.commit()
