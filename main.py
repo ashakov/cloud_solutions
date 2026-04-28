@@ -44,6 +44,28 @@ async def cmd_benchmarks() -> None:
         print(f"Benchmarks rebuilt: {n} rows.")
 
 
+async def cmd_status() -> None:
+    from db.database import init_db, AsyncSessionLocal
+    from db.models import ScraperRun
+    from sqlalchemy import select
+
+    await init_db()
+    async with AsyncSessionLocal() as session:
+        runs = (await session.execute(
+            select(ScraperRun).order_by(ScraperRun.started_at.desc()).limit(20)
+        )).scalars().all()
+        if not runs:
+            print("No scraper runs found.")
+            return
+        print(f"\n{'ID':>4}  {'Source':<14} {'District':<16} {'Type':<12} "
+              f"{'Status':<8} {'Fetched':>7} {'New':>6}")
+        print("-" * 75)
+        for r in runs:
+            print(f"{r.id:>4}  {r.source:<14} {(r.district or ''):<16} "
+                  f"{(r.property_type or ''):<12} {r.status:<8} "
+                  f"{(r.records_fetched or 0):>7} {(r.records_new or 0):>6}")
+
+
 def cmd_kpi(args: argparse.Namespace) -> None:
     from core.kpi_engine import KPIParams, all_scenarios
     from core.seasonality import implied_daily_rates
