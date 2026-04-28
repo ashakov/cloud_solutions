@@ -216,6 +216,23 @@ async def _upsert_rentals(session, listings: list) -> int:
     return new_count
 
 
+async def cmd_enrich(args: argparse.Namespace) -> None:
+    """Visit detail pages for sale properties missing area_sqm and fill in fields."""
+    from db.database import init_db, AsyncSessionLocal
+    from parsers.fazwaz_detail import FazWazDetailScraper
+
+    await init_db()
+    async with AsyncSessionLocal() as session:
+        scraper = FazWazDetailScraper()
+        visited, updated = await scraper.enrich(
+            session,
+            limit=args.limit,
+            delay=args.delay,
+            batch_size=args.batch,
+        )
+    print(f"\nEnrich complete. visited={visited} updated={updated}")
+
+
 async def cmd_locations(args: argparse.Namespace) -> None:
     """Show unique raw subdistrict/location values from DB — helps fix district mapping."""
     from db.database import init_db, AsyncSessionLocal
@@ -386,6 +403,15 @@ def main() -> None:
     p_inspect = sub.add_parser("inspect", help="Show DB contents: fill-rate, samples, benchmarks")
     p_inspect.add_argument("--n", type=int, default=10, help="Number of sample listings to show")
 
+    # enrich
+    p_enrich = sub.add_parser("enrich", help="Enrich sale properties with detail-page data (area_sqm, floor, CAM…)")
+    p_enrich.add_argument("--limit", type=int, default=None,
+                          help="Max properties to process (default: all missing area_sqm)")
+    p_enrich.add_argument("--delay", type=float, default=2.5,
+                          help="Seconds between requests (default: 2.5)")
+    p_enrich.add_argument("--batch", type=int, default=10,
+                          help="DB commit every N updates (default: 10)")
+
     # locations
     sub.add_parser("locations", help="Show unique raw location texts — helps fix district mapping")
 
@@ -425,6 +451,8 @@ def main() -> None:
         asyncio.run(seed(listings_per_combo=args.count))
     elif args.command == "inspect":
         asyncio.run(cmd_inspect(args))
+    elif args.command == "enrich":
+        asyncio.run(cmd_enrich(args))
     elif args.command == "locations":
         asyncio.run(cmd_locations(args))
     else:
