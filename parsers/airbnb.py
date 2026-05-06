@@ -182,6 +182,41 @@ def _infer_type_from_title(title: str) -> str:
     return "condo"
 
 
+def _find_lat_lon(obj: Any, depth: int = 0) -> tuple[float | None, float | None]:
+    """Recursively search a card dict for lat/lon in Phuket's bounding box."""
+    if depth > 20:
+        return None, None
+    if isinstance(obj, dict):
+        # Direct keys Airbnb may use
+        lat = obj.get("lat") or obj.get("latitude")
+        lon = obj.get("lng") or obj.get("lon") or obj.get("longitude")
+        if lat is not None and lon is not None:
+            try:
+                lat, lon = float(lat), float(lon)
+                if 7.4 <= lat <= 8.3 and 97.9 <= lon <= 98.9:
+                    return lat, lon
+            except (TypeError, ValueError):
+                pass
+        # Also check nested "coordinate" / "location" objects
+        for key in ("coordinate", "location", "geoCoordinates", "geo"):
+            sub = obj.get(key)
+            if isinstance(sub, dict):
+                r = _find_lat_lon(sub, depth + 1)
+                if r[0] is not None:
+                    return r
+        for v in obj.values():
+            if isinstance(v, (dict, list)):
+                r = _find_lat_lon(v, depth + 1)
+                if r[0] is not None:
+                    return r
+    elif isinstance(obj, list):
+        for item in obj:
+            r = _find_lat_lon(item, depth + 1)
+            if r[0] is not None:
+                return r
+    return None, None
+
+
 def _find_card_nodes(obj: Any, results: list | None = None, depth: int = 0) -> list[dict]:
     """Recursively find card nodes: dicts with structuredDisplayPrice + title."""
     if results is None:
@@ -251,12 +286,17 @@ def _parse_card(card: dict, season_tag: str) -> RawRentalListing | None:
     has_gym     = bool(re.search(r"\bgym\b|\bfitness", name_lower))
     has_sea_view = bool(re.search(r"sea\s*view|ocean\s*view|seaview", name_lower))
 
+    # ── Coordinates (may be embedded in card JSON) ────────────────────────────
+    lat, lon = _find_lat_lon(card)
+
     return RawRentalListing(
         source="airbnb",
         source_id=listing_id,
         url=url,
         project_name=name[:400],
         district=district,
+        lat=lat,
+        lon=lon,
         property_type=property_type,
         bedrooms=bedrooms,
         bathrooms=None,          # not exposed in search cards

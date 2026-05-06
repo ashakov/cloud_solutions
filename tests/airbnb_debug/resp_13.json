@@ -1,0 +1,129 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODJfOTc3X25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODJfOTc4X25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODJfOTc5X25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODJfOTgwX25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODNfOTc3X25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODNfOTc4X25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODNfOTc5X25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODNfOTgwX25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODRfOTc3X25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODRfOTc4X25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODRfOTc5X25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODRfOTgwX25laWdoYm9yaG9vZHM=",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODJfOTc3X2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODJfOTc4X2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODJfOTc5X2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODJfOTgwX2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODNfOTc3X2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODNfOTc4X2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODNfOTc5X2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODNfOTgwX2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODRfOTc3X2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODRfOTc4X2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODRfOTc5X2V2ZW50cw==",
+        "mapItems": []
+      },
+      {
+        "__typename": "PlacesMapTileLayer",
+        "id": "UGxhY2VzTWFwVGlsZUxheWVyOjExXzE1ODRfOTgwX2V2ZW50cw==",
+        "mapItems": []
+      }
+    ]
+  },
+  "extensions": {
+    "traceId": "u0cKkGDb3paZp_312nPf-w=="
+  }
+}

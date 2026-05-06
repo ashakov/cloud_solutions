@@ -37,6 +37,8 @@ class RawRentalListing:
 
     district: str | None = None
     subdistrict: str | None = None
+    lat: float | None = None
+    lon: float | None = None
     property_type: str | None = None
     bedrooms: int | None = None
     bathrooms: int | None = None

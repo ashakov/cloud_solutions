@@ -1,0 +1,15 @@
+{
+  "userData": {
+    "audienceType": "visitor"
+  },
+  "stayListingData": {},
+  "stayReservationData": {},
+  "experienceListingData": {},
+  "experienceReservationData": {
+    "serviceFeesInUSD": 0.0
+  },
+  "activityListingData": {},
+  "activityReservationData": {
+    "serviceFeesInUSD": 0.0
+  }
+}

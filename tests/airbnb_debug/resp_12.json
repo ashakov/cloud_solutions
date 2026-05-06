@@ -1,0 +1,14 @@
+{
+  "data": {
+    "maps": {
+      "__typename": "MapsQuery",
+      "getMapViewportInfo": {
+        "__typename": "MapsMapViewportInfoResponse",
+        "localizedLocationName": "Thailand"
+      }
+    }
+  },
+  "extensions": {
+    "traceId": "SJWoXWvXTTEXvDwzsgUkYw=="
+  }
+}

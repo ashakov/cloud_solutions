@@ -1,0 +1,475 @@
+{
+  "currency_settings": [
+    {
+      "code": "AED",
+      "id": "AED",
+      "localized_full_name": "Emirati dirham",
+      "name": "United Arab Emirates Dirham",
+      "symbol": "ﺩ.ﺇ",
+      "unicode_symbol": "ﺩ.ﺇ",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "AUD",
+      "id": "AUD",
+      "localized_full_name": "Australian dollar",
+      "name": "Australian Dollars",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "BRL",
+      "id": "BRL",
+      "localized_full_name": "Brazilian real",
+      "name": "Brazilian Reais",
+      "symbol": "R$",
+      "unicode_symbol": "R$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "BGN",
+      "id": "BGN",
+      "localized_full_name": "Bulgarian lev",
+      "name": "Bulgarian Leva",
+      "symbol": "лв.",
+      "unicode_symbol": "лв.",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "CAD",
+      "id": "CAD",
+      "localized_full_name": "Canadian dollar",
+      "name": "Canadian Dollar",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "CHF",
+      "id": "CHF",
+      "localized_full_name": "Swiss franc",
+      "name": "Swiss Francs",
+      "symbol": "CHF",
+      "unicode_symbol": "CHF",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "CLP",
+      "id": "CLP",
+      "localized_full_name": "Chilean peso",
+      "name": "Chilean Pesos",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "CNY",
+      "id": "CNY",
+      "localized_full_name": "Chinese yuan",
+      "name": "Chinese Yuan",
+      "symbol": "￥",
+      "unicode_symbol": "￥",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "COP",
+      "id": "COP",
+      "localized_full_name": "Colombian peso",
+      "name": "Columbian Pesos",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "CRC",
+      "id": "CRC",
+      "localized_full_name": "Costa Rican colon",
+      "name": "Colon",
+      "symbol": "₡",
+      "unicode_symbol": "₡",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "CZK",
+      "id": "CZK",
+      "localized_full_name": "Czech koruna",
+      "name": "Czech Koruny",
+      "symbol": "Kč",
+      "unicode_symbol": "Kč",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "DKK",
+      "id": "DKK",
+      "localized_full_name": "Danish krone",
+      "name": "Danish Kroner",
+      "symbol": "kr",
+      "unicode_symbol": "kr",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "EGP",
+      "id": "EGP",
+      "localized_full_name": "Egyptian pound",
+      "name": "Egyptian Pound",
+      "symbol": "ج.م",
+      "unicode_symbol": "ج.م",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": false
+    },
+    {
+      "code": "EUR",
+      "id": "EUR",
+      "localized_full_name": "Euro",
+      "name": "Euro",
+      "symbol": "€",
+      "unicode_symbol": "€",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "GBP",
+      "id": "GBP",
+      "localized_full_name": "Pound sterling",
+      "name": "Pounds Sterling",
+      "symbol": "£",
+      "unicode_symbol": "£",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "GHS",
+      "id": "GHS",
+      "localized_full_name": "Ghanaian cedi",
+      "name": "Ghanaian Cedi",
+      "symbol": "GH₵",
+      "unicode_symbol": "GH₵",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": false
+    },
+    {
+      "code": "HKD",
+      "id": "HKD",
+      "localized_full_name": "Hong Kong dollar",
+      "name": "Hong Kong Dollars",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "HUF",
+      "id": "HUF",
+      "localized_full_name": "Hungarian forint",
+      "name": "Forint",
+      "symbol": "Ft",
+      "unicode_symbol": "Ft",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "IDR",
+      "id": "IDR",
+      "localized_full_name": "Indonesian rupiah",
+      "name": "Indonesian Rupiah",
+      "symbol": "Rp",
+      "unicode_symbol": "Rp",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "ILS",
+      "id": "ILS",
+      "localized_full_name": "Israeli new shekel",
+      "name": "New Shekels",
+      "symbol": "₪",
+      "unicode_symbol": "₪",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "INR",
+      "id": "INR",
+      "localized_full_name": "Indian rupee",
+      "name": "Indian Rupee",
+      "symbol": "₹",
+      "unicode_symbol": "₹",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "JPY",
+      "id": "JPY",
+      "localized_full_name": "Japanese yen",
+      "name": "Yen",
+      "symbol": "¥",
+      "unicode_symbol": "¥",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "KES",
+      "id": "KES",
+      "localized_full_name": "Kenyan shilling",
+      "name": "Kenyan Shilling",
+      "symbol": "KSh",
+      "unicode_symbol": "KSh",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": false
+    },
+    {
+      "code": "KRW",
+      "id": "KRW",
+      "localized_full_name": "South Korean won",
+      "name": "South Korean Won",
+      "symbol": "₩",
+      "unicode_symbol": "₩",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "KZT",
+      "id": "KZT",
+      "localized_full_name": "Kazakhstani tenge",
+      "name": "Kazakhstani Tenge",
+      "symbol": "₸",
+      "unicode_symbol": "₸",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": false
+    },
+    {
+      "code": "MAD",
+      "id": "MAD",
+      "localized_full_name": "Moroccan dirham",
+      "name": "Moroccan Dirham",
+      "symbol": "MAD",
+      "unicode_symbol": "MAD",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "MXN",
+      "id": "MXN",
+      "localized_full_name": "Mexican peso",
+      "name": "Mexican Pesos",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "MYR",
+      "id": "MYR",
+      "localized_full_name": "Malaysian ringgit",
+      "name": "Ringgits",
+      "symbol": "RM",
+      "unicode_symbol": "RM",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "NOK",
+      "id": "NOK",
+      "localized_full_name": "Norwegian krone",
+      "name": "Krone",
+      "symbol": "kr",
+      "unicode_symbol": "kr",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "NZD",
+      "id": "NZD",
+      "localized_full_name": "New Zealand dollar",
+      "name": "New Zealand Dollars",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "PEN",
+      "id": "PEN",
+      "localized_full_name": "Peruvian sol",
+      "name": "Nuevos Soles",
+      "symbol": "S/",
+      "unicode_symbol": "S/",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "PLN",
+      "id": "PLN",
+      "localized_full_name": "Polish zloty",
+      "name": "Zlotych",
+      "symbol": "zł",
+      "unicode_symbol": "zł",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "PHP",
+      "id": "PHP",
+      "localized_full_name": "Philippine peso",
+      "name": "Philippines Peso",
+      "symbol": "₱",
+      "unicode_symbol": "₱",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "QAR",
+      "id": "QAR",
+      "localized_full_name": "Qatari riyal",
+      "name": "Qatari Riyal",
+      "symbol": "ر.ق",
+      "unicode_symbol": "ر.ق",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": false
+    },
+    {
+      "code": "RON",
+      "id": "RON",
+      "localized_full_name": "Romanian leu",
+      "name": "New Lei",
+      "symbol": "lei",
+      "unicode_symbol": "lei",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "SAR",
+      "id": "SAR",
+      "localized_full_name": "Saudi Arabian riyal",
+      "name": "Saudi Riyal",
+      "symbol": "SR",
+      "unicode_symbol": "SR",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "SEK",
+      "id": "SEK",
+      "localized_full_name": "Swedish krona",
+      "name": "Sweden, Kronor",
+      "symbol": "kr",
+      "unicode_symbol": "kr",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "SGD",
+      "id": "SGD",
+      "localized_full_name": "Singapore dollar",
+      "name": "Singapore, Dollars",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "THB",
+      "id": "THB",
+      "localized_full_name": "Thai baht",
+      "name": "Baht",
+      "symbol": "฿",
+      "unicode_symbol": "฿",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "TRY",
+      "id": "TRY",
+      "localized_full_name": "Turkish lira",
+      "name": "Turkish Lira",
+      "symbol": "₺",
+      "unicode_symbol": "₺",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "TWD",
+      "id": "TWD",
+      "localized_full_name": "New Taiwan dollar",
+      "name": "Taiwan Dollars",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "UAH",
+      "id": "UAH",
+      "localized_full_name": "Ukrainian hryvnia",
+      "name": "Ukrainian hryvnia",
+      "symbol": "₴",
+      "unicode_symbol": "₴",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "UGX",
+      "id": "UGX",
+      "localized_full_name": "Ugandan shilling",
+      "name": "Ugandan Shilling",
+      "symbol": "USh",
+      "unicode_symbol": "USh",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": false
+    },
+    {
+      "code": "USD",
+      "id": "USD",
+      "localized_full_name": "United States dollar",
+      "name": "United States Dollars",
+      "symbol": "$",
+      "unicode_symbol": "$",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "UYU",
+      "id": "UYU",
+      "localized_full_name": "Uruguayan peso",
+      "name": "Uruguayan Pesos",
+      "symbol": "$U",
+      "unicode_symbol": "$U",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "VND",
+      "id": "VND",
+      "localized_full_name": "Vietnamese dong",
+      "name": "Vietnamese Dong",
+      "symbol": "₫",
+      "unicode_symbol": "₫",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    },
+    {
+      "code": "ZAR",
+      "id": "ZAR",
+      "localized_full_name": "South African rand",
+      "name": "Rand",
+      "symbol": "R",
+      "unicode_symbol": "R",
+      "is_eligible_for_guest": true,
+      "is_eligible_for_lys": true
+    }
+  ],
+  "time_stamp": 1777362732
+}

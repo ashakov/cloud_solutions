@@ -1,0 +1,1398 @@
+{
+  "data": {
+    "presentation": {
+      "__typename": "RootPresentationContainer",
+      "autoSuggestions": {
+        "__typename": "AutoSuggestionsResponse",
+        "staysAutoSuggestionResults": [
+          {
+            "__typename": "RecentSearchResult",
+            "items": [
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/d144685e-6856-4974-8567-f0079cd51d49.png",
+                "itemId": "6be08b69-1c99-42b4-afd1-ca7c24d7cd62",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [
+                    {
+                      "__typename": "ExploreSearchParam",
+                      "deleteBool": null,
+                      "inArray": null,
+                      "key": "checkin",
+                      "value": {
+                        "__typename": "StringValue",
+                        "stringValue": "2027-02-10"
+                      },
+                      "valueType": "string"
+                    },
+                    {
+                      "__typename": "ExploreSearchParam",
+                      "deleteBool": null,
+                      "inArray": null,
+                      "key": "checkout",
+                      "value": {
+                        "__typename": "StringValue",
+                        "stringValue": "2027-02-17"
+                      },
+                      "valueType": "string"
+                    },
+                    {
+                      "__typename": "ExploreSearchParam",
+                      "deleteBool": null,
+                      "inArray": null,
+                      "key": "date_picker_type",
+                      "value": {
+                        "__typename": "StringValue",
+                        "stringValue": "calendar"
+                      },
+                      "valueType": "string"
+                    },
+                    {
+                      "__typename": "ExploreSearchParam",
+                      "deleteBool": null,
+                      "inArray": null,
+                      "key": "adults",
+                      "value": {
+                        "__typename": "LongValue",
+                        "longValue": "2"
+                      },
+                      "valueType": "integer"
+                    },
+                    {
+                      "__typename": "ExploreSearchParam",
+                      "deleteBool": null,
+                      "inArray": null,
+                      "key": "guests",
+                      "value": {
+                        "__typename": "LongValue",
+                        "longValue": "2"
+                      },
+                      "valueType": "integer"
+                    }
+                  ],
+                  "placeId": "ChIJT1JixOIxUDARIbo9BoWayuk",
+                  "query": "Phuket, Thailand",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": true,
+                  "resetKeys": []
+                },
+                "subtitle": "Feb 10 – 17, 2027 · 2 guests",
+                "subtitleA11yText": null,
+                "title": "Phuket",
+                "description": null
+              }
+            ],
+            "title": "Recent searches"
+          },
+          {
+            "__typename": "RecommendedDestinationResult",
+            "items": [
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/ea5e5ee3-e9d8-48a1-b7e9-1003bf6fe850.png",
+                "itemId": null,
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [
+                    {
+                      "__typename": "ExploreSearchParam",
+                      "deleteBool": null,
+                      "inArray": null,
+                      "key": "location_search",
+                      "value": {
+                        "__typename": "StringValue",
+                        "stringValue": "NEARBY"
+                      },
+                      "valueType": "string"
+                    },
+                    {
+                      "__typename": "ExploreSearchParam",
+                      "deleteBool": null,
+                      "inArray": null,
+                      "key": "center_lat",
+                      "value": {
+                        "__typename": "DoubleValue",
+                        "doubleValue": 13.86
+                      },
+                      "valueType": "float"
+                    },
+                    {
+                      "__typename": "ExploreSearchParam",
+                      "deleteBool": null,
+                      "inArray": null,
+                      "key": "center_lng",
+                      "value": {
+                        "__typename": "DoubleValue",
+                        "doubleValue": 100.51
+                      },
+                      "valueType": "float"
+                    }
+                  ],
+                  "placeId": null,
+                  "query": null,
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "category_tag",
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "location_search_type",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map",
+                    "search_mode",
+                    "center_lat",
+                    "center_lng"
+                  ]
+                },
+                "subtitle": "Find what’s around you",
+                "subtitleA11yText": null,
+                "title": "Nearby",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/2ddfa4b7-298d-4c4a-95d1-dacb51ac741a.png",
+                "itemId": "5f8a9429-7d12-448f-90df-c27c4999702f",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ82ENKDJgHTERIEjiXbIAAQE",
+                  "query": "Bangkok, Thailand",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For sights like Grand Palace",
+                "subtitleA11yText": null,
+                "title": "Bangkok, Thailand",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/53d6a7e5-1b45-4709-9627-866fbb160d86.png",
+                "itemId": "392f3a36-8603-4f79-994d-eb3afb9f31af",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ49cxTZKVAjER_xC9qQHzf6k",
+                  "query": "Pattaya City, Thailand",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "Popular beach destination",
+                "subtitleA11yText": null,
+                "title": "Pattaya, Thailand",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/64149bf8-a122-4760-a53d-c3e8bba848a0.png",
+                "itemId": "e9241a09-1558-4945-ae2d-3d82ddb1792b",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJXW-7kH462jARZ0ObpXBi1Jg",
+                  "query": "Chiang Mai, Thailand",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For nature-lovers",
+                "subtitleA11yText": null,
+                "title": "Chiang Mai, Thailand",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/7a891a2c-4e67-4309-8292-854c7ae18e73.png",
+                "itemId": "2543f01e-d647-47fb-882b-2b04d1bca3d9",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ0T2NLikpdTERKxE8d61aX_E",
+                  "query": "Ho Chi Minh City, Vietnam",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its bustling nightlife",
+                "subtitleA11yText": null,
+                "title": "Ho Chi Minh City, Vietnam",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/c669ce02-7969-498e-8a3c-4382718a62d8.png",
+                "itemId": "a5aef2c7-42d2-40b8-b92a-15c8bb0f8530",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ5-rvAcdJzDERfSgcL1uO2fQ",
+                  "query": "Kuala Lumpur, Malaysia",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For sights like Petronas Twin Towers",
+                "subtitleA11yText": null,
+                "title": "Kuala Lumpur, Malaysia",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/2b5fff53-d328-4beb-839a-cfe4fcb4223a.png",
+                "itemId": "94a205a3-4bf9-4e2c-8888-c117b1696de9",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJEXKZAPSq_TARYBI4LLwjAgQ",
+                  "query": "Hua Hin, Thailand",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its seaside allure",
+                "subtitleA11yText": null,
+                "title": "Hua Hin, Thailand",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/68f3ad7c-3bb0-4e6b-b9cb-522bf3577e4e.png",
+                "itemId": "571e6aa1-306e-4ffb-bbc4-c6acfb9838e7",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJXSModoWLGGARILWiCfeu2M0",
+                  "query": "Tokyo, Japan",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its stunning architecture",
+                "subtitleA11yText": null,
+                "title": "Tokyo, Japan",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/ef838e5e-251c-424a-85f8-cfb218717f75.png",
+                "itemId": "7995319c-d9b3-40c6-96e8-05839f9df3ce",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ4eIGNFXmAGAR5y9q5G7BW8U",
+                  "query": "Osaka, Japan",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its top-notch dining",
+                "subtitleA11yText": null,
+                "title": "Osaka, Japan",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/30924e2c-6f3f-4df8-b695-2c35279de8a7.png",
+                "itemId": "85879757-ca57-4a2b-b653-b096f5b09167",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJbyZmHFDxVDARMIN9Pb1a1e0",
+                  "query": "Ko Samui, Thailand",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For a trip abroad",
+                "subtitleA11yText": null,
+                "title": "Ko Samui, Thailand",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/c98f58bf-8512-43e3-af54-6c1f0b2c8a23.png",
+                "itemId": "c322070c-2f9c-4dcc-8c05-cb1d305871c6",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJRcbZaklDXz4R6SkAK7_QznQ",
+                  "query": "Dubai, United Arab Emirates",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For sights like Burj Khalifa",
+                "subtitleA11yText": null,
+                "title": "Dubai, United Arab Emirates",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/eb63c43e-fd0e-48f2-8cab-ef156da3bc0c.png",
+                "itemId": "bbc47a7e-9c60-4754-8b56-2d302e835ae6",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJD7fiBh9u5kcRYJSMaMOCCwQ",
+                  "query": "Paris, France",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its bustling nightlife",
+                "subtitleA11yText": null,
+                "title": "Paris, France",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/7a891a2c-4e67-4309-8292-854c7ae18e73.png",
+                "itemId": "5f13f781-125b-4d33-81ac-51384908bb3a",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJWa852g-WAjERWOjkU9j3pSo",
+                  "query": "Pattaya Beach",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "Near you",
+                "subtitleA11yText": null,
+                "title": "Pattaya Beach",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/be94de25-865b-4fac-8330-84f6f1a3fea6.png",
+                "itemId": "90d136db-e3cd-49c9-b233-2bfabbbbf55d",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJS_23WSCNGGAR0u8y4o_GYew",
+                  "query": "Shinjuku, Japan",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its top-notch dining",
+                "subtitleA11yText": null,
+                "title": "Shinjuku, Japan",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/0dffff5d-721f-4ca3-abb7-dbee55a72ff8.png",
+                "itemId": "f972daeb-87df-4aa0-913f-3d688fdd1fe6",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJa2JP5tcMREARo25X4u2E0GE",
+                  "query": "Tbilisi, Georgia",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For sights like Bridge of Peace",
+                "subtitleA11yText": null,
+                "title": "Tbilisi, Georgia",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/c9333e22-1d8d-4d6c-80db-615f4c2d4cc4.png",
+                "itemId": "d7f30e99-f8e5-4006-bb68-a4c81d85660f",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJKyaoGAmpQjQR99RS3zrx9Ms",
+                  "query": "Ximending, Taiwan",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For a trip abroad",
+                "subtitleA11yText": null,
+                "title": "Ximending, Taiwan",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/7864a0d5-c792-41c8-87ae-f31ce4306367.png",
+                "itemId": "15700121-9a9d-49e2-8a99-5c14d0e26840",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ8cM8zdaoAWARPR27azYdlsA",
+                  "query": "Kyoto, Japan",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its stunning architecture",
+                "subtitleA11yText": null,
+                "title": "Kyoto, Japan",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/43b6be43-d8d8-4a97-9c17-e52b6e65ce66.png",
+                "itemId": "6c5a2470-e83f-4edd-800a-1725460c93cc",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJdd4hrwug2EcRmSrV3Vo6llI",
+                  "query": "London, United Kingdom",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For sights like Buckingham Palace",
+                "subtitleA11yText": null,
+                "title": "London, United Kingdom",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/fbf29ec4-5156-473b-bad5-e129ebb70a4f.png",
+                "itemId": "2f5f3cea-1c12-4ac9-b0d3-aca11559689e",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJNc0j6G3raDURpwhxJHTL2DU",
+                  "query": "Busan, South Korea",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For a trip abroad",
+                "subtitleA11yText": null,
+                "title": "Busan, South Korea",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/f787a18e-1506-4072-b74b-eae892d7d993.png",
+                "itemId": "888f79bc-d954-404b-a3a7-1e2964697c56",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJq8t8kgTXTzARXvYo8rUqE28",
+                  "query": "Rawai",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "Great for summer getaways",
+                "subtitleA11yText": null,
+                "title": "Rawai",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/53d6a7e5-1b45-4709-9627-866fbb160d86.png",
+                "itemId": "15cbd198-92e6-40ec-af0d-b29551227476",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJZ7ELyL06UDARbRcj60k3Dfg",
+                  "query": "Patong Beach, Thailand",
+                  "refinementPaths": [
+                    "/homes"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For a trip abroad",
+                "subtitleA11yText": null,
+                "title": "Patong Beach, Thailand",
+                "description": null
+              }
+            ],
+            "title": "Suggested destinations"
+          }
+        ],
+        "experiencesAutoSuggestionResults": [
+          {
+            "__typename": "ReservationResult",
+            "items": [],
+            "title": null
+          },
+          {
+            "__typename": "NearbyDestinationResult",
+            "title": "Nearby",
+            "subtitle": "Find what’s around you",
+            "subtitleA11yText": null,
+            "exploreSearchParams": {
+              "__typename": "ExploreSearchParams",
+              "locationSearch": null,
+              "params": [
+                {
+                  "__typename": "ExploreSearchParam",
+                  "deleteBool": null,
+                  "inArray": null,
+                  "key": "location_search",
+                  "value": {
+                    "__typename": "StringValue",
+                    "stringValue": "NEARBY"
+                  },
+                  "valueType": "string"
+                },
+                {
+                  "__typename": "ExploreSearchParam",
+                  "deleteBool": null,
+                  "inArray": null,
+                  "key": "center_lat",
+                  "value": {
+                    "__typename": "DoubleValue",
+                    "doubleValue": 13.86
+                  },
+                  "valueType": "float"
+                },
+                {
+                  "__typename": "ExploreSearchParam",
+                  "deleteBool": null,
+                  "inArray": null,
+                  "key": "center_lng",
+                  "value": {
+                    "__typename": "DoubleValue",
+                    "doubleValue": 100.51
+                  },
+                  "valueType": "float"
+                }
+              ],
+              "placeId": null,
+              "query": null,
+              "refinementPaths": [
+                "/experiences"
+              ],
+              "resetFilters": false,
+              "resetKeys": [
+                "category_tag",
+                "parent_city_place_id",
+                "place_id",
+                "query",
+                "location",
+                "location_search",
+                "location_search_type",
+                "ne_lat",
+                "ne_lng",
+                "sw_lat",
+                "sw_lng",
+                "search_by_map",
+                "search_mode",
+                "center_lat",
+                "center_lng"
+              ]
+            }
+          },
+          {
+            "__typename": "RecommendedDestinationResult",
+            "items": [
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/2ddfa4b7-298d-4c4a-95d1-dacb51ac741a.png",
+                "itemId": "5f8a9429-7d12-448f-90df-c27c4999702f",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ82ENKDJgHTERIEjiXbIAAQE",
+                  "query": "Bangkok, Thailand",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For sights like Grand Palace",
+                "subtitleA11yText": null,
+                "title": "Bangkok, Thailand",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/64149bf8-a122-4760-a53d-c3e8bba848a0.png",
+                "itemId": "e9241a09-1558-4945-ae2d-3d82ddb1792b",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJXW-7kH462jARZ0ObpXBi1Jg",
+                  "query": "Chiang Mai, Thailand",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For nature-lovers",
+                "subtitleA11yText": null,
+                "title": "Chiang Mai, Thailand",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/7a891a2c-4e67-4309-8292-854c7ae18e73.png",
+                "itemId": "2543f01e-d647-47fb-882b-2b04d1bca3d9",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ0T2NLikpdTERKxE8d61aX_E",
+                  "query": "Ho Chi Minh City, Vietnam",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its bustling nightlife",
+                "subtitleA11yText": null,
+                "title": "Ho Chi Minh City, Vietnam",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/68f3ad7c-3bb0-4e6b-b9cb-522bf3577e4e.png",
+                "itemId": "571e6aa1-306e-4ffb-bbc4-c6acfb9838e7",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJXSModoWLGGARILWiCfeu2M0",
+                  "query": "Tokyo, Japan",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its stunning architecture",
+                "subtitleA11yText": null,
+                "title": "Tokyo, Japan",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/ef838e5e-251c-424a-85f8-cfb218717f75.png",
+                "itemId": "7995319c-d9b3-40c6-96e8-05839f9df3ce",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ4eIGNFXmAGAR5y9q5G7BW8U",
+                  "query": "Osaka, Japan",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its top-notch dining",
+                "subtitleA11yText": null,
+                "title": "Osaka, Japan",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/eb63c43e-fd0e-48f2-8cab-ef156da3bc0c.png",
+                "itemId": "bbc47a7e-9c60-4754-8b56-2d302e835ae6",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJD7fiBh9u5kcRYJSMaMOCCwQ",
+                  "query": "Paris, France",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its bustling nightlife",
+                "subtitleA11yText": null,
+                "title": "Paris, France",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/be94de25-865b-4fac-8330-84f6f1a3fea6.png",
+                "itemId": "90d136db-e3cd-49c9-b233-2bfabbbbf55d",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJS_23WSCNGGAR0u8y4o_GYew",
+                  "query": "Shinjuku, Japan",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its top-notch dining",
+                "subtitleA11yText": null,
+                "title": "Shinjuku, Japan",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/0dffff5d-721f-4ca3-abb7-dbee55a72ff8.png",
+                "itemId": "f972daeb-87df-4aa0-913f-3d688fdd1fe6",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJa2JP5tcMREARo25X4u2E0GE",
+                  "query": "Tbilisi, Georgia",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For sights like Bridge of Peace",
+                "subtitleA11yText": null,
+                "title": "Tbilisi, Georgia",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/7864a0d5-c792-41c8-87ae-f31ce4306367.png",
+                "itemId": "15700121-9a9d-49e2-8a99-5c14d0e26840",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJ8cM8zdaoAWARPR27azYdlsA",
+                  "query": "Kyoto, Japan",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For its stunning architecture",
+                "subtitleA11yText": null,
+                "title": "Kyoto, Japan",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/43b6be43-d8d8-4a97-9c17-e52b6e65ce66.png",
+                "itemId": "6c5a2470-e83f-4edd-800a-1725460c93cc",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJdd4hrwug2EcRmSrV3Vo6llI",
+                  "query": "London, United Kingdom",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For sights like Buckingham Palace",
+                "subtitleA11yText": null,
+                "title": "London, United Kingdom",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-2/original/fbf29ec4-5156-473b-bad5-e129ebb70a4f.png",
+                "itemId": "2f5f3cea-1c12-4ac9-b0d3-aca11559689e",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJNc0j6G3raDURpwhxJHTL2DU",
+                  "query": "Busan, South Korea",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "For a trip abroad",
+                "subtitleA11yText": null,
+                "title": "Busan, South Korea",
+                "description": null
+              },
+              {
+                "__typename": "LocationSuggestionItem",
+                "iconUrl": "https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-hawaii-autosuggest-destination-icons-1/original/f787a18e-1506-4072-b74b-eae892d7d993.png",
+                "itemId": "888f79bc-d954-404b-a3a7-1e2964697c56",
+                "location": null,
+                "searchParams": {
+                  "__typename": "ExploreSearchParams",
+                  "locationSearch": null,
+                  "params": [],
+                  "placeId": "ChIJq8t8kgTXTzARXvYo8rUqE28",
+                  "query": "Rawai",
+                  "refinementPaths": [
+                    "/experiences"
+                  ],
+                  "resetFilters": false,
+                  "resetKeys": [
+                    "parent_city_place_id",
+                    "place_id",
+                    "query",
+                    "location",
+                    "location_search",
+                    "ne_lat",
+                    "ne_lng",
+                    "sw_lat",
+                    "sw_lng",
+                    "search_by_map"
+                  ]
+                },
+                "subtitle": "Great for summer getaways",
+                "subtitleA11yText": null,
+                "title": "Rawai",
+                "description": null
+              }
+            ],
+            "title": "Suggested destinations"
+          }
+        ],
+        "servicesAutoSuggestionResults": [
+          {
+            "__typename": "ReservationResult",
+            "items": [],
+            "title": null
+          },
+          {
+            "__typename": "NearbyDestinationResult",
+            "title": "Nearby",
+            "subtitle": "Find what’s around you",
+            "subtitleA11yText": null,
+            "exploreSearchParams": {
+              "__typename": "ExploreSearchParams",
+              "locationSearch": null,
+              "params": [
+                {
+                  "__typename": "ExploreSearchParam",
+                  "deleteBool": null,
+                  "inArray": null,
+                  "key": "location_search",
+                  "value": {
+                    "__typename": "StringValue",
+                    "stringValue": "NEARBY"
+                  },
+                  "valueType": "string"
+                },
+                {
+                  "__typename": "ExploreSearchParam",
+                  "deleteBool": null,
+                  "inArray": null,
+                  "key": "center_lat",
+                  "value": {
+                    "__typename": "DoubleValue",
+                    "doubleValue": 13.86
+                  },
+                  "valueType": "float"
+                },
+                {
+                  "__typename": "ExploreSearchParam",
+                  "deleteBool": null,
+                  "inArray": null,
+                  "key": "center_lng",
+                  "value": {
+                    "__typename": "DoubleValue",
+                    "doubleValue": 100.51
+                  },
+                  "valueType": "float"
+                }
+              ],
+              "placeId": null,
+              "query": null,
+              "refinementPaths": [
+                "/services"
+              ],
+              "resetFilters": false,
+              "resetKeys": [
+                "category_tag",
+                "parent_city_place_id",
+                "place_id",
+                "query",
+                "location",
+                "location_search",
+                "location_search_type",
+                "ne_lat",
+                "ne_lng",
+                "sw_lat",
+                "sw_lng",
+                "search_by_map",
+                "search_mode",
+                "center_lat",
+                "center_lng"
+              ]
+            }
+          }
+        ],
+        "loggingMetadata": {
+          "__typename": "AutoSuggestionsLoggingMetadata",
+          "requestId": "8deb5984-b4ab-4a17-aa7c-dcefcf56b286",
+          "experimentDataList": []
+        },
+        "aiSearchAutoSuggestionResults": [
+          "Spacious place with bunk beds and board games",
+          "A pool, outdoor dining area, hammocks, and a fire pit"
+        ]
+      }
+    }
+  },
+  "extensions": {
+    "traceId": "Bm5ki7rgPcpqLwQqMpgzTA=="
+  }
+}

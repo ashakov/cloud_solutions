@@ -164,6 +164,27 @@ class FazWazDetailScraper(BaseParser):
             if sqm > 0:
                 result["price_per_sqm_thb"] = round(result["price_thb"] / sqm, 0)
 
+        # ── Coordinates from Google Maps Street View link ───────────────────
+        # href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=7.9803254,98.3556413&..."
+        coord_m = re.search(r'viewpoint=([\d.]+),([\d.]+)', html)
+        if coord_m:
+            lat, lon = float(coord_m.group(1)), float(coord_m.group(2))
+            # Sanity-check: Phuket bounding box
+            if 7.4 <= lat <= 8.3 and 97.9 <= lon <= 98.9:
+                result["lat"] = lat
+                result["lon"] = lon
+
+        # ── Distance to nearest beach ───────────────────────────────────────
+        # .project-information-info-place-distance → "- 0.5 Km" or "- 400 M"
+        dist_el = soup.select_one(".project-information-info-place-distance")
+        if dist_el:
+            dm = re.search(r"([\d.]+)\s*(km|m)\b", dist_el.get_text(strip=True), re.IGNORECASE)
+            if dm:
+                val = float(dm.group(1))
+                if dm.group(2).lower() == "km":
+                    val *= 1000
+                result["distance_to_beach_m"] = int(val)
+
         return result
 
     async def enrich(
@@ -181,7 +202,7 @@ class FazWazDetailScraper(BaseParser):
         from db.models import Property
         from sqlalchemy import select
 
-        q = select(Property).where(Property.area_sqm.is_(None)).order_by(Property.id)
+        q = select(Property).where(Property.lat.is_(None)).order_by(Property.id)
         if limit:
             q = q.limit(limit)
 

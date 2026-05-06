@@ -44,6 +44,32 @@ async def cmd_benchmarks() -> None:
         print(f"Benchmarks rebuilt: {n} rows.")
 
 
+async def cmd_kpis(args: argparse.Namespace) -> None:
+    """Populate property_kpis and rental_calendar tables."""
+    from db.database import init_db, AsyncSessionLocal
+    from parsers.normalizer import rebuild_benchmarks
+    from core.populate import populate_property_kpis, populate_rental_calendar
+
+    await init_db()
+
+    target = getattr(args, "target", "all")
+
+    if target in ("benchmarks", "all"):
+        async with AsyncSessionLocal() as session:
+            n = await rebuild_benchmarks(session)
+        print(f"Benchmarks: {n} rows rebuilt.")
+
+    if target in ("kpis", "all"):
+        async with AsyncSessionLocal() as session:
+            n = await populate_property_kpis(session)
+        print(f"Property KPIs: {n} rows written ({n // 3} properties x 3 scenarios).")
+
+    if target in ("calendar", "all"):
+        async with AsyncSessionLocal() as session:
+            n = await populate_rental_calendar(session)
+        print(f"Rental calendar: {n} rows written.")
+
+
 async def cmd_status() -> None:
     from db.database import init_db, AsyncSessionLocal
     from db.models import ScraperRun
@@ -161,6 +187,8 @@ async def _upsert_rentals(session, listings: list) -> int:
             row = RentalListing(
                 source=raw.source, source_id=raw.source_id, url=raw.url,
                 district=raw.district, property_type=raw.property_type,
+                lat=getattr(raw, "lat", None),
+                lon=getattr(raw, "lon", None),
                 bedrooms=raw.bedrooms, bathrooms=raw.bathrooms,
                 area_sqm=raw.area_sqm, max_guests=raw.max_guests,
                 has_pool=raw.has_pool, has_gym=raw.has_gym,
@@ -210,6 +238,10 @@ async def _upsert_rentals(session, listings: list) -> int:
                 existing.bathrooms = raw.bathrooms
             if raw.area_sqm is not None and existing.area_sqm is None:
                 existing.area_sqm = raw.area_sqm
+            if getattr(raw, "lat", None) is not None and existing.lat is None:
+                existing.lat = raw.lat
+            if getattr(raw, "lon", None) is not None and existing.lon is None:
+                existing.lon = raw.lon
             existing.updated_at = datetime.utcnow()
 
     await session.commit()
@@ -217,20 +249,29 @@ async def _upsert_rentals(session, listings: list) -> int:
 
 
 async def cmd_enrich(args: argparse.Namespace) -> None:
-    """Visit detail pages for sale properties missing area_sqm and fill in fields."""
+    """Visit detail pages to fill lat/lon + distance_to_beach for sales and/or rentals."""
     from db.database import init_db, AsyncSessionLocal
     from parsers.fazwaz_detail import FazWazDetailScraper
+    from parsers.fazwaz_rent_detail import FazWazRentDetailScraper
 
     await init_db()
-    async with AsyncSessionLocal() as session:
-        scraper = FazWazDetailScraper()
-        visited, updated = await scraper.enrich(
-            session,
-            limit=args.limit,
-            delay=args.delay,
-            batch_size=args.batch,
-        )
-    print(f"\nEnrich complete. visited={visited} updated={updated}")
+    target = getattr(args, "target", "sales")
+
+    if target in ("sales", "all"):
+        async with AsyncSessionLocal() as session:
+            scraper = FazWazDetailScraper()
+            v, u = await scraper.enrich(
+                session, limit=args.limit, delay=args.delay, batch_size=args.batch,
+            )
+        print(f"\n[sales] visited={v} updated={u}")
+
+    if target in ("rentals", "all"):
+        async with AsyncSessionLocal() as session:
+            scraper = FazWazRentDetailScraper()
+            v, u = await scraper.enrich(
+                session, limit=args.limit, delay=args.delay, batch_size=args.batch,
+            )
+        print(f"\n[rentals] visited={v} updated={u}")
 
 
 async def cmd_locations(args: argparse.Namespace) -> None:
@@ -291,7 +332,7 @@ async def cmd_inspect(args: argparse.Namespace) -> None:
             ("area_sqm",          Property.area_sqm),
             ("price_per_sqm_thb", Property.price_per_sqm_thb),
             ("bedrooms",          Property.bedrooms),
-            ("ownership_type≠?",  Property.ownership_type != "unknown"),
+            ("ownership_type!=?",  Property.ownership_type != "unknown"),
             ("has_pool",          Property.has_pool),
             ("is_off_plan",       Property.is_off_plan),
             ("rental_program",    Property.rental_program),
@@ -302,7 +343,7 @@ async def cmd_inspect(args: argparse.Namespace) -> None:
             n = (await session.execute(
                 select(func.count()).select_from(Property).where(col != None)  # noqa: E711
             )).scalar()
-            bar = "█" * int(20 * n / total) if total else ""
+            bar = "#" * int(20 * n / total) if total else ""
             print(f"    {label:<24} {n:>5}  {bar} {100*n//total if total else 0}%")
 
         # ── Sample listings ───────────────────────────────────────────────
@@ -314,7 +355,7 @@ async def cmd_inspect(args: argparse.Namespace) -> None:
         )).scalars().all()
 
         print(f"\n  Last {args.n} listings with price+area:")
-        print(f"  {'Project':<30} {'District':<14} {'฿/m²':>8} {'Price THB':>12} {'m²':>6} {'Beds':>4} {'Own':<10}")
+        print(f"  {'Project':<30} {'District':<14} {'THB/m2':>8} {'Price THB':>12} {'m2':>6} {'Beds':>4} {'Own':<10}")
         print(f"  {'-'*90}")
         for p in samples:
             print(
@@ -335,7 +376,7 @@ async def cmd_inspect(args: argparse.Namespace) -> None:
         )).scalars().all()
         if bmarks:
             print(f"\n  District benchmarks (condo+villa, all ownership):")
-            print(f"  {'District':<16} {'Type':<8} {'Median ฿/m²':>12} {'P25':>10} {'P75':>10} {'N':>5}")
+            print(f"  {'District':<16} {'Type':<8} {'Median THB/m2':>14} {'P25':>10} {'P75':>10} {'N':>5}")
             print(f"  {'-'*65}")
             for b in bmarks:
                 print(
@@ -404,9 +445,11 @@ def main() -> None:
     p_inspect.add_argument("--n", type=int, default=10, help="Number of sample listings to show")
 
     # enrich
-    p_enrich = sub.add_parser("enrich", help="Enrich sale properties with detail-page data (area_sqm, floor, CAM…)")
+    p_enrich = sub.add_parser("enrich", help="Enrich properties with detail-page data (coords, distance, area_sqm…)")
+    p_enrich.add_argument("--target", choices=["sales", "rentals", "all"], default="sales",
+                          help="Which listings to enrich (default: sales)")
     p_enrich.add_argument("--limit", type=int, default=None,
-                          help="Max properties to process (default: all missing area_sqm)")
+                          help="Max properties to process (default: all missing lat)")
     p_enrich.add_argument("--delay", type=float, default=2.5,
                           help="Seconds between requests (default: 2.5)")
     p_enrich.add_argument("--batch", type=int, default=10,
@@ -430,6 +473,11 @@ def main() -> None:
     p_kpi.add_argument("--mgmt-fee",   type=float, dest="mgmt_fee", default=None,
                        help="Management fee fraction 0–1 (default: 0.25)")
 
+    # kpis (batch populate)
+    p_kpis = sub.add_parser("kpis", help="Populate property_kpis + rental_calendar from scraped data")
+    p_kpis.add_argument("--target", choices=["all", "benchmarks", "kpis", "calendar"],
+                        default="all", help="Which tables to populate (default: all)")
+
     # seed
     p_seed = sub.add_parser("seed", help="Populate DB with synthetic Phuket data (no internet needed)")
     p_seed.add_argument("--count", type=int, default=40, help="Listings per district/type/ownership combo")
@@ -446,6 +494,8 @@ def main() -> None:
         asyncio.run(cmd_status())
     elif args.command == "kpi":
         cmd_kpi(args)
+    elif args.command == "kpis":
+        asyncio.run(cmd_kpis(args))
     elif args.command == "seed":
         from scrapers.seeder import seed
         asyncio.run(seed(listings_per_combo=args.count))

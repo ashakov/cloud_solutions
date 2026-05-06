@@ -110,9 +110,13 @@ async def upsert_listing(session: AsyncSession, raw: RawListing) -> tuple[bool, 
 
 async def rebuild_benchmarks(session: AsyncSession) -> int:
     """
-    Recalculate DistrictBenchmark from all active properties.
+    Recalculate DistrictBenchmark from all active properties + rental comps.
     Returns the number of benchmark rows written.
     """
+    from db.models import RentalListing
+    from core.seasonality import annual_revenue, OCCUPANCY, SEASON_DAYS
+
+    # ── Sale data ────────────────────────────────────────────────────────────
     stmt = select(
         Property.district,
         Property.property_type,
@@ -125,27 +129,84 @@ async def rebuild_benchmarks(session: AsyncSession) -> int:
         Property.price_per_sqm_thb > 0,
     )
     rows = (await session.execute(stmt)).fetchall()
-
     if not rows:
         logger.warning("No active properties found for benchmark calculation")
         return 0
-
     df = pd.DataFrame(rows, columns=["district", "property_type", "ownership_type", "price_thb", "price_sqm"])
 
-    # Delete stale benchmarks
+    # ── Rental data ──────────────────────────────────────────────────────────
+    rent_stmt = select(
+        RentalListing.district,
+        RentalListing.property_type,
+        RentalListing.daily_rate_high_thb,
+        RentalListing.monthly_rate_high_season_thb,
+        RentalListing.monthly_rate_low_season_thb,
+    ).where(RentalListing.is_active == True)
+    rent_rows = (await session.execute(rent_stmt)).fetchall()
+    rent_df = pd.DataFrame(rent_rows, columns=[
+        "district", "property_type", "daily_high", "monthly_high", "monthly_low",
+    ])
+
+    # Weighted avg occupancy for base scenario (constant across districts)
+    occ = OCCUPANCY["base"]
+    occupancy_avg = round(
+        sum(SEASON_DAYS[s] * occ[s] for s in occ) / sum(SEASON_DAYS.values()), 4
+    )
+
+    def _rental_metrics(district: str, prop_type: str | None) -> dict:
+        """Compute rental metrics for a district/type slice."""
+        mask = rent_df["district"] == district
+        if prop_type:
+            mask &= rent_df["property_type"] == prop_type
+        sub = rent_df[mask]
+        if sub.empty:
+            return {}
+
+        daily_vals = sub["daily_high"].dropna()
+        monthly_vals = sub["monthly_high"].dropna()
+
+        result: dict = {"sample_count_rentals": len(sub), "occupancy_rate_avg": occupancy_avg}
+
+        if not daily_vals.empty:
+            med_daily = float(np.median(daily_vals))
+            result["avg_daily_rate_high_thb"] = med_daily
+        if not monthly_vals.empty:
+            result["avg_monthly_rate_thb"] = float(np.median(monthly_vals))
+
+        # Implied gross yield: annualise the best available rate, divide by median sale price
+        sale_mask = (df["district"] == district)
+        if prop_type:
+            sale_mask &= (df["property_type"] == prop_type)
+        sale_prices = df[sale_mask]["price_thb"].dropna()
+        if sale_prices.empty:
+            return result
+
+        med_sale = float(np.median(sale_prices))
+        if med_sale <= 0:
+            return result
+
+        if not daily_vals.empty:
+            med_daily = float(np.median(daily_vals))
+            monthly_low = med_daily * 30 * 0.65
+            gross, _ = annual_revenue(
+                med_daily * 1.55, med_daily, med_daily * 0.75, monthly_low / 30, scenario="base"
+            )
+        elif not monthly_vals.empty:
+            med_monthly = float(np.median(monthly_vals))
+            med_low = float(np.median(sub["monthly_low"].dropna())) if not sub["monthly_low"].dropna().empty else med_monthly * 0.7
+            gross = med_monthly * 6 + med_low * 6
+        else:
+            return result
+
+        result["avg_rental_yield_pct"] = round(gross / med_sale * 100, 4)
+        return result
+
+    # ── Delete stale benchmarks ───────────────────────────────────────────────
     await session.execute(delete(DistrictBenchmark))
 
-    written = 0
-    for (district, prop_type, own_type), group in df.groupby(
-        ["district", "property_type", "ownership_type"]
-    ):
-        sqm_vals = group["price_sqm"].dropna().values
-        price_vals = group["price_thb"].dropna().values
-
-        if len(sqm_vals) < 2:
-            continue
-
-        bm = DistrictBenchmark(
+    def _make_bm(district, prop_type, own_type, sqm_vals, price_vals) -> DistrictBenchmark:
+        metrics = _rental_metrics(district, prop_type)
+        return DistrictBenchmark(
             district=district,
             property_type=prop_type,
             ownership_type=own_type,
@@ -158,35 +219,32 @@ async def rebuild_benchmarks(session: AsyncSession) -> int:
             median_price_total=float(np.median(price_vals)) if len(price_vals) else None,
             avg_price_total=float(np.mean(price_vals)) if len(price_vals) else None,
             sample_count=len(sqm_vals),
+            avg_daily_rate_high_thb=metrics.get("avg_daily_rate_high_thb"),
+            avg_monthly_rate_thb=metrics.get("avg_monthly_rate_thb"),
+            avg_rental_yield_pct=metrics.get("avg_rental_yield_pct"),
+            occupancy_rate_avg=metrics.get("occupancy_rate_avg"),
+            sample_count_rentals=metrics.get("sample_count_rentals"),
             calculated_at=datetime.utcnow(),
         )
-        session.add(bm)
+
+    written = 0
+    for (district, prop_type, own_type), group in df.groupby(
+        ["district", "property_type", "ownership_type"]
+    ):
+        sqm_vals = group["price_sqm"].dropna().values
+        price_vals = group["price_thb"].dropna().values
+        if len(sqm_vals) < 2:
+            continue
+        session.add(_make_bm(district, prop_type, own_type, sqm_vals, price_vals))
         written += 1
 
-    # Also compute "all" ownership aggregate
+    # "all" ownership aggregate
     for (district, prop_type), group in df.groupby(["district", "property_type"]):
         sqm_vals = group["price_sqm"].dropna().values
         price_vals = group["price_thb"].dropna().values
-
         if len(sqm_vals) < 3:
             continue
-
-        bm = DistrictBenchmark(
-            district=district,
-            property_type=prop_type,
-            ownership_type="all",
-            median_price_per_sqm=float(np.median(sqm_vals)),
-            avg_price_per_sqm=float(np.mean(sqm_vals)),
-            p25_price_per_sqm=float(np.percentile(sqm_vals, 25)),
-            p75_price_per_sqm=float(np.percentile(sqm_vals, 75)),
-            min_price_per_sqm=float(np.min(sqm_vals)),
-            max_price_per_sqm=float(np.max(sqm_vals)),
-            median_price_total=float(np.median(price_vals)) if len(price_vals) else None,
-            avg_price_total=float(np.mean(price_vals)) if len(price_vals) else None,
-            sample_count=len(sqm_vals),
-            calculated_at=datetime.utcnow(),
-        )
-        session.add(bm)
+        session.add(_make_bm(district, prop_type, "all", sqm_vals, price_vals))
         written += 1
 
     await session.commit()

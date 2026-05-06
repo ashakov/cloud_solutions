@@ -28,6 +28,7 @@ class Property(Base):
     subdistrict = Column(String(100))
     lat = Column(Float)
     lon = Column(Float)
+    distance_to_beach_m = Column(Integer)
 
     property_type = Column(String(50))                # condo|villa|house|townhouse|land
     ownership_type = Column(String(50))               # freehold|leasehold|unknown
@@ -119,6 +120,14 @@ class DistrictBenchmark(Base):
     avg_price_total = Column(Float)
 
     sample_count = Column(Integer)
+
+    # Rental metrics (populated by rebuild_benchmarks when rental data is available)
+    avg_daily_rate_high_thb = Column(Float)      # median high-season daily rate from comps
+    avg_monthly_rate_thb = Column(Float)         # median monthly rate from long-term comps
+    avg_rental_yield_pct = Column(Float)         # implied gross yield vs median sale price
+    occupancy_rate_avg = Column(Float)           # base-scenario weighted avg occupancy
+    sample_count_rentals = Column(Integer)       # rental comps used
+
     calculated_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     __table_args__ = (
