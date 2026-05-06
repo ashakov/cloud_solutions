@@ -1,0 +1,151 @@
+{
+  "data": {
+    "viewer": null,
+    "presentation": {
+      "__typename": "RootPresentationContainer",
+      "header": {
+        "__typename": "Header",
+        "topLevelItemGroup": {
+          "__typename": "HeaderItemGroup",
+          "items": [
+            {
+              "__typename": "HeaderItem",
+              "itemId": "BECOME_A_HOST",
+              "loggingId": "simpleHeader.loggedOut.becomeAHost",
+              "url": null,
+              "type": "BECOME_A_HOST",
+              "text": "Become a host"
+            },
+            {
+              "__typename": "HeaderItem",
+              "itemId": "LANGUAGE_AND_CURRENCY",
+              "loggingId": "simpleHeader.loggedOut.localeSettingsMenu",
+              "url": null,
+              "type": "LOCALE",
+              "text": null
+            }
+          ]
+        },
+        "menuItemGroups": [
+          {
+            "__typename": "HeaderItemGroup",
+            "groupId": "SECONDARY_MENU",
+            "items": [
+              {
+                "__typename": "HeaderItem",
+                "badgeCount": null,
+                "caption": null,
+                "hasBadge": false,
+                "icon": "COMPACT_HOST_HELP_ALT",
+                "isNew": null,
+                "itemId": "HELP",
+                "loggingId": "simpleHeader.loggedOut.profileMenu.help",
+                "primary": false,
+                "text": "Help Center",
+                "type": "HELP",
+                "url": "/help"
+              }
+            ]
+          },
+          {
+            "__typename": "HeaderItemGroup",
+            "groupId": "TERTIARY_MENU",
+            "items": [
+              {
+                "__typename": "HeaderItem",
+                "badgeCount": null,
+                "caption": "It's easy to start hosting and earn extra income.",
+                "hasBadge": false,
+                "icon": null,
+                "isNew": null,
+                "itemId": "BECOME_A_HOST",
+                "loggingId": "userProfile.BecomeAHostBanner",
+                "primary": false,
+                "text": "Become a host",
+                "type": "BECOME_A_HOST",
+                "url": null
+              }
+            ]
+          },
+          {
+            "__typename": "HeaderItemGroup",
+            "groupId": "QUATERNARY_MENU",
+            "items": [
+              {
+                "__typename": "HeaderItem",
+                "badgeCount": null,
+                "caption": null,
+                "hasBadge": false,
+                "icon": null,
+                "isNew": null,
+                "itemId": "HOST_REFERRALS",
+                "loggingId": "simpleHeader.loggedOut.profileMenu.referAHost",
+                "primary": false,
+                "text": "Refer a Host",
+                "type": "LINK",
+                "url": "/refer?r=67"
+              },
+              {
+                "__typename": "HeaderItem",
+                "badgeCount": null,
+                "caption": null,
+                "hasBadge": false,
+                "icon": null,
+                "isNew": null,
+                "itemId": "FIND_A_COHOST",
+                "loggingId": "simpleHeader.loggedOut.profileMenu.findACohost",
+                "primary": false,
+                "text": "Find a co-host",
+                "type": "LINK",
+                "url": "/co-hosts/home"
+              },
+              {
+                "__typename": "HeaderItem",
+                "badgeCount": null,
+                "caption": null,
+                "hasBadge": false,
+                "icon": null,
+                "isNew": null,
+                "itemId": "GIFTCARDS",
+                "loggingId": "simpleHeader.loggedOut.profileMenu.giftcards",
+                "primary": false,
+                "text": "Gift cards",
+                "type": "LINK",
+                "url": "/giftcards"
+              }
+            ]
+          },
+          {
+            "__typename": "HeaderItemGroup",
+            "groupId": "QUINARY_MENU",
+            "items": [
+              {
+                "__typename": "HeaderItem",
+                "badgeCount": null,
+                "caption": null,
+                "hasBadge": false,
+                "icon": null,
+                "isNew": null,
+                "itemId": "LOGIN_OR_SIGNUP",
+                "loggingId": "simpleHeader.loggedOut.profileMenu.logInOrSignUp",
+                "primary": false,
+                "text": "Log in or sign up",
+                "type": "LINK",
+                "url": "/signup_login"
+              }
+            ]
+          }
+        ],
+        "avatarImageUrl": null
+      },
+      "supplyTypeSelector": {
+        "__typename": "SupplyTypeSelectorPresentationContainer",
+        "isInPrioritizedExperienceMarket": true,
+        "isInPrioritizedServiceMarket": true
+      }
+    }
+  },
+  "extensions": {
+    "traceId": "A0nfHNIJz17nvYQQaQK0ew=="
+  }
+}
