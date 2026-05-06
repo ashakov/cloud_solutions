@@ -11,7 +11,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
-from db.models import Property, DistrictBenchmark
+from db.models import Property, DistrictBenchmark, PriceHistory
 from parsers.base import RawListing
 
 logger = logging.getLogger(__name__)
@@ -95,6 +95,7 @@ async def upsert_listing(session: AsyncSession, raw: RawListing) -> tuple[bool, 
         "occupancy_status", "is_off_plan", "completion_date", "year_built",
         "days_on_market", "price_drop_count", "zone_type",
     ]
+    old_price = existing.price_thb
     for f in fields:
         new_val = getattr(raw, f, None)
         if new_val is not None and getattr(existing, f) != new_val:
@@ -104,6 +105,17 @@ async def upsert_listing(session: AsyncSession, raw: RawListing) -> tuple[bool, 
     if changed:
         existing.updated_at = datetime.utcnow()
         existing.set_raw(raw.raw_data)
+
+        # Record price change in history if price moved
+        new_price = raw.price_thb
+        if new_price and new_price != old_price:
+            status = "price_drop" if (old_price and new_price < old_price) else "price_increase"
+            session.add(PriceHistory(
+                property_id=existing.id,
+                price_thb=new_price,
+                price_per_sqm_thb=raw.price_per_sqm_thb,
+                status=status,
+            ))
 
     return False, changed
 

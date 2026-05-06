@@ -20,13 +20,22 @@ from config import SCRAPER_MAX_PAGES
 from db.database import AsyncSessionLocal, init_db
 from db.models import ScraperRun
 from parsers.base import BaseParser
+from parsers.scrapling_base import ScraplingParser
 from parsers.fazwaz import FazWazParser
 from parsers.dotproperty import DotPropertyParser
+from parsers.ddproperty import DDPropertyParser
+from parsers.hipflat import HipflatParser
+from parsers.kaidee import KaideeParser
 from parsers.normalizer import upsert_listing, rebuild_benchmarks
 
 logger = logging.getLogger(__name__)
 
-ALL_PARSERS: list[Type[BaseParser]] = [FazWazParser, DotPropertyParser]
+AnyParser = Type[BaseParser] | Type[ScraplingParser]
+
+ALL_PARSERS: list[AnyParser] = [
+    FazWazParser, DotPropertyParser,
+    DDPropertyParser, HipflatParser, KaideeParser,
+]
 
 DEFAULT_DISTRICTS = [
     "bang-tao", "kamala", "surin", "layan",
@@ -39,7 +48,7 @@ DISTRICT_AGNOSTIC = {FazWazParser.SOURCE}
 
 
 async def run_parser(
-    parser_cls: Type[BaseParser],
+    parser_cls: AnyParser,
     district: str,
     property_type: str,
     session: AsyncSession,
@@ -100,7 +109,7 @@ async def run_parser(
 async def run_all(
     districts: list[str] | None = None,
     property_types: list[str] | None = None,
-    parsers: list[Type[BaseParser]] | None = None,
+    parsers: list[AnyParser] | None = None,
 ) -> None:
     """Main entry point: scrape then rebuild benchmarks.
 

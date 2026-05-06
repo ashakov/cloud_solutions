@@ -141,6 +141,23 @@ class DistrictBenchmark(Base):
         )
 
 
+class PriceHistory(Base):
+    """Tracks every price change for a property over time."""
+    __tablename__ = "price_history"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    property_id = Column(Integer, ForeignKey("properties.id", ondelete="CASCADE"), nullable=False)
+    price_thb = Column(Float, nullable=False)
+    price_per_sqm_thb = Column(Float)
+    status = Column(String(30))       # active | price_drop | price_increase | sold | removed
+    recorded_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        Index("ix_price_history_property_id", "property_id"),
+        Index("ix_price_history_recorded_at", "recorded_at"),
+    )
+
+
 class ScraperRun(Base):
     """Audit log for every scraper execution."""
     __tablename__ = "scraper_runs"

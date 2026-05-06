@@ -14,3 +14,7 @@ tenacity==9.0.0
 fake-useragent==1.5.1
 httpx==0.27.2
 scrapling==0.4.7
+browserforge>=1.1.2
+curl-cffi>=0.7
+apscheduler>=3.10
+telethon>=1.36
